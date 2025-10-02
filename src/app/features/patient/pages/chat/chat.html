@@ -1,0 +1,87 @@
+<div class="chat-vert">
+  <!-- TOP: conversations strip -->
+  <section class="strip-panel card">
+    <div class="strip-header">
+      <div class="title">
+        <mat-icon>forum</mat-icon>
+        <h2>Messages</h2>
+      </div>
+
+      <div class="search">
+        <input
+          class="search-input"
+          placeholder="Search doctors or messages…"
+          [value]="query()"
+          (input)="query.set($any($event.target).value)" />
+        <mat-icon class="search-ico">search</mat-icon>
+      </div>
+    </div>
+
+    <div class="strip" tabindex="0" aria-label="Conversations">
+      <button
+        class="tile"
+        *ngFor="let t of filteredThreads(); trackBy: trackById"
+        [class.active]="activeThread().id === t.id"
+        (click)="select(t)">
+        <img [src]="t.avatar" class="avatar" alt="" />
+        <div class="meta">
+          <div class="name">{{ t.name }}</div>
+          <div class="sub">{{ t.spec }}</div>
+        </div>
+        <span class="time" *ngIf="t.lastAt">{{ t.lastAt | date:'shortTime' }}</span>
+        <span class="badge" *ngIf="t.unread">{{ t.unread }}</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- BOTTOM: chat canvas -->
+  <section class="conversation card panel">
+    <header class="conv-header">
+      <div class="doc">
+        <span class="presence" *ngIf="activeThread().online"></span>
+        <img class="avatar" [src]="activeThread().avatar" alt="" />
+        <div>
+          <div class="name">{{ activeThread().name }}</div>
+          <div class="sub">{{ activeThread().spec }}</div>
+        </div>
+      </div>
+
+      <input
+        class="inline-search"
+        placeholder="Search in chat…"
+        [value]="chatQuery()"
+        (input)="chatQuery.set($any($event.target).value)" />
+    </header>
+
+    <button class="load" mat-stroked-button (click)="loadEarlier()">Load earlier</button>
+
+    <div class="conv-body" #scrollArea>
+      <ng-container *ngFor="let m of messages(); trackBy: trackById">
+        <div class="msg" [class.me]="m.from === 'me'">
+          <div class="stamp" *ngIf="m.showStamp">{{ m.ts | date:'hh:mm a' }}</div>
+          <div class="bubble">{{ m.text }}</div>
+          <div class="meta">
+            <span>{{ m.ts | date:'shortTime' }}</span>
+            <span *ngIf="m.from === 'me' && m.seen"> • seen</span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <footer class="composer">
+      <button mat-icon-button class="ghost" (click)="attach()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+      <input
+        class="draft"
+        placeholder="Type your message…"
+        [value]="draft()"
+        (keydown.enter)="send()"
+        (input)="draft.set($any($event.target).value)" />
+      <button mat-flat-button color="primary" (click)="send()">
+        <mat-icon>send</mat-icon>
+        Send
+      </button>
+    </footer>
+  </section>
+</div>

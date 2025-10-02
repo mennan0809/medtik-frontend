@@ -1,0 +1,70 @@
+/* ========= Admin Layout ========= */
+
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: transparent; /* let global aurora show through */
+}
+
+/* Shell + sidenav */
+.shell { height: 100dvh; background: transparent; }
+
+.side {
+  width: 300px;
+  background: rgba(255,255,255,.02);
+  backdrop-filter: blur(8px);
+  border-right: 1px solid rgba(255,255,255,.06);
+}
+
+/* Brand */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: 1rem .9rem;
+}
+.brand-logo {
+  width: 56px; height: 56px; object-fit: contain; display: block;
+  filter: drop-shadow(0 6px 16px rgba(42,118,183,.45));
+}
+.brand span {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: .3px;
+}
+
+/* Nav list styles */
+.mat-mdc-list-item .mat-icon { margin-right: .5rem; color: var(--muted); }
+.mat-mdc-list-item.active {
+  background: rgba(255,255,255,.04);
+  border-left: 3px solid rgba(42,118,183,.7);
+}
+.mat-mdc-list-item.active .mat-icon,
+.mat-mdc-list-item.active span { color: var(--text); }
+
+/* Top bar + page area */
+.content .topbar {
+  background: transparent;
+  color: var(--text);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.hide-desktop { display: none; }
+.grow { flex: 1 1 auto; }
+.page { padding: 1.25rem; }
+
+/* Responsive */
+@media (max-width: 960px){
+  .hide-desktop { display: inline-flex; }
+  .side { width: 260px; }
+  .brand-logo { width: 44px; height: 44px; }
+}
+
+/* Keep aurora visible everywhere */
+:host ::ng-deep .mat-drawer-container,
+:host ::ng-deep .mat-drawer-content,
+:host ::ng-deep .mat-sidenav-content,
+:host ::ng-deep .content,
+:host ::ng-deep .page,
+:host ::ng-deep .topbar {
+  background: transparent !important;
+}

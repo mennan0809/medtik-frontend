@@ -1,0 +1,82 @@
+<h2 class="title">Users</h2>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <mat-form-field appearance="outline" class="search">
+    <mat-label>Search users</mat-label>
+    <input matInput [formControl]="filterCtrl" placeholder="Name, email, phone or status">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+</div>
+
+<!-- Table container (glassy look) -->
+<div class="table-wrap mat-elevation-z2">
+  <table mat-table [dataSource]="data" matSort class="glass-table">
+
+    <!-- Name -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let r">
+        <div class="stack">
+          <span class="strong">{{ r.name }}</span>
+          <span class="muted email-under-name">{{ r.email }}</span>
+        </div>
+      </td>
+    </ng-container>
+
+    <!-- Email -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+      <td mat-cell *matCellDef="let r">{{ r.email }}</td>
+    </ng-container>
+
+    <!-- Phone -->
+    <ng-container matColumnDef="phone">
+      <th mat-header-cell *matHeaderCellDef>Phone</th>
+      <td mat-cell *matCellDef="let r">{{ r.phone }}</td>
+    </ng-container>
+
+    <!-- Joined -->
+    <ng-container matColumnDef="joined">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Joined</th>
+      <td mat-cell *matCellDef="let r">{{ r.joined }}</td>
+    </ng-container>
+
+    <!-- Status -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let r">
+        <mat-chip [color]="r.status === 'active' ? 'primary' : 'warn'">
+          {{ r.status }}
+        </mat-chip>
+      </td>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let r" class="actions">
+        <button *ngIf="r.status==='active'" mat-stroked-button color="warn" (click)="ban(r)" matTooltip="Ban user">
+          <mat-icon>block</mat-icon> Ban
+        </button>
+        <button *ngIf="r.status==='banned'" mat-stroked-button color="primary" (click)="unban(r)" matTooltip="Unban user">
+          <mat-icon>lock_open</mat-icon> Unban
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="cols" class="sticky"></tr>
+    <tr mat-row *matRowDef="let row; columns: cols;" class="row"></tr>
+  </table>
+
+  <div class="table-footer">
+    <div class="range">{{ rangeLabel() }}</div>
+    <!-- IMPORTANT: bind length so paginator enables page buttons -->
+    <mat-paginator
+      [length]="data.filteredData.length"
+      [pageSize]="pageSize"
+      [hidePageSize]="true"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</div>

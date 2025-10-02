@@ -1,0 +1,62 @@
+<div class="chat-vert container">
+  <!-- Top strip -->
+  <section class="strip-panel card">
+    <div class="strip-header">
+      <div class="title">
+        <mat-icon>sms</mat-icon>
+        <h2>Inbox</h2>
+      </div>
+      <div class="search">
+        <input class="search-input" placeholder="Search patients or messages…"
+               [value]="stripQuery()" (input)="stripQuery.set($any($event.target).value)" />
+        <mat-icon class="search-ico">search</mat-icon>
+      </div>
+    </div>
+
+    <div class="strip">
+      <div class="tile" *ngFor="let t of filteredThreads(); trackBy: trackById"
+           [class.active]="t.id === activeId()" (click)="select(t)">
+        <img class="avatar" [src]="t.avatar" alt="" />
+        <div class="meta">
+          <span class="name">{{ t.name }}</span>
+          <span class="sub">{{ t.spec }}</span>
+        </div>
+        <span class="time">{{ time(t.lastAt) }}</span>
+        <span class="badge" *ngIf="t.unread">{{ t.unread }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Conversation -->
+  <section class="conversation card panel">
+    <header class="conv-header">
+      <div class="doc">
+        <span class="presence"></span>
+        <img class="avatar" [src]="activeThread()?.avatar" alt="" />
+        <div>
+          <div class="name">{{ activeThread()?.name }}</div>
+          <div class="sub">{{ activeThread()?.spec }}</div>
+        </div>
+      </div>
+
+      <input class="inline-search" placeholder="Search in chat…"
+             [value]="chatQuery()" (input)="chatQuery.set($any($event.target).value)" />
+    </header>
+
+    <div class="conv-body">
+      <div class="msg" *ngFor="let m of messages(); trackBy: trackById" [class.me]="m.me">
+        <div class="bubble">{{ m.text }}</div>
+        <div class="meta">{{ time(m.at) }} <ng-container *ngIf="m.me"> • {{ m.seen ? 'seen' : 'sent' }}</ng-container></div>
+      </div>
+    </div>
+
+    <footer class="composer">
+      <button mat-icon-button class="ghost" matTooltip="Attach"><mat-icon>attach_file</mat-icon></button>
+      <input class="draft" placeholder="Type your message…" [value]="draft()"
+             (input)="draft.set($any($event.target).value)" (keydown.enter)="send()" />
+      <button mat-flat-button color="primary" (click)="send()">
+        <mat-icon>send</mat-icon><span>Send</span>
+      </button>
+    </footer>
+  </section>
+</div>

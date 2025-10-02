@@ -1,0 +1,56 @@
+<div class="grid" @stagger>
+  <!-- KPI row -->
+  <mat-card class="card kpi" *ngFor="let k of kpis" [@fadeUp]>
+    <div class="kpi-row">
+      <mat-icon>{{ k.icon }}</mat-icon>
+      <div>
+        <div class="val">{{ k.value }}</div>
+        <div class="lbl">{{ k.label }}</div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Today timeline -->
+  <mat-card class="card span-7" [@fadeUp]>
+    <h2>Today</h2>
+    <div class="timeline">
+      <div class="slot" *ngFor="let s of today">
+        <div class="time">{{ s.time }}</div>
+        <div class="who">
+          <strong>{{ s.patient }}</strong>
+          <div class="small">{{ s.type }}</div>
+        </div>
+        <div class="actions">
+          <button mat-stroked-button color="primary" [routerLink]="['/doctor/appointments']">
+            <mat-icon>open_in_new</mat-icon> Details
+          </button>
+          <button mat-stroked-button [routerLink]="['/doctor/inbox']">
+            <mat-icon>forum</mat-icon> Chat
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Quick actions -->
+  <mat-card class="card span-5" [@fadeUp]>
+    <h2>Quick actions</h2>
+    <div class="qa">
+      <button mat-flat-button color="primary" routerLink="/doctor/schedule">
+        <mat-icon>add</mat-icon> Add slots
+      </button>
+      <button mat-stroked-button routerLink="/doctor/appointments">
+        <mat-icon>event</mat-icon> View appointments
+      </button>
+      <button mat-stroked-button routerLink="/doctor/patients">
+        <mat-icon>group</mat-icon> Patient list
+      </button>
+      <button mat-stroked-button routerLink="/doctor/inbox">
+        <mat-icon>forum</mat-icon> Open inbox
+      </button>
+      <button mat-stroked-button routerLink="/doctor/profile">
+        <mat-icon>badge</mat-icon> Edit profile
+      </button>
+    </div>
+  </mat-card>
+</div>

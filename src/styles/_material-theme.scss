@@ -1,0 +1,43 @@
+/* Angular Material theming for Angular 18+ (M2 API) */
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+/* Palettes (M2) */
+$medtik-primary: mat.m2-define-palette(mat.$m2-indigo-palette, 500, 600, 700);
+$medtik-accent:  mat.m2-define-palette(mat.$m2-teal-palette,   500, 600, 700);
+$medtik-warn:    mat.m2-define-palette(mat.$m2-red-palette,    500);
+
+/* Dark theme (default) */
+$medtik-dark-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $medtik-primary,
+    accent:  $medtik-accent,
+    warn:    $medtik-warn,
+  ),
+));
+
+/* Optional light theme */
+$medtik-light-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $medtik-primary,
+    accent:  $medtik-accent,
+    warn:    $medtik-warn,
+  ),
+));
+
+/* Apply themes */
+:root, .theme-dark {
+  @include mat.all-component-themes($medtik-dark-theme);
+}
+.theme-light {
+  @include mat.all-component-themes($medtik-light-theme);
+}
+
+/* Match cards to your tokens */
+.mat-mdc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}

@@ -1,0 +1,55 @@
+<div class="wrap container">
+  <header class="bar">
+    <div class="title">
+      <mat-icon>notifications</mat-icon>
+      <h2>Notifications</h2>
+    </div>
+
+    <div class="controls">
+      <mat-form-field appearance="outline" class="search">
+        <mat-label>Search</mat-label>
+        <input matInput [value]="query()" (input)="query.set($any($event.target).value)" />
+      </mat-form-field>
+
+      <mat-button-toggle-group [value]="filter()" (change)="filter.set($event.value)">
+        <mat-button-toggle value="all">All</mat-button-toggle>
+        <mat-button-toggle value="appointment">Appointments</mat-button-toggle>
+        <mat-button-toggle value="mention">Mentions</mat-button-toggle>
+        <mat-button-toggle value="review">Reviews</mat-button-toggle>
+        <mat-button-toggle value="system">System</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <button mat-stroked-button (click)="clear()">Clear all</button>
+    </div>
+  </header>
+
+  <section class="list card">
+    <div class="item" *ngFor="let n of filtered()">
+      <div class="left">
+        <span class="pill" [ngClass]="badgeClass(n.kind)">{{ n.kind }}</span>
+        <div class="meta">
+          <div class="t">
+            <span class="title">{{ n.title }}</span>
+            <span class="dot">•</span>
+            <span class="time">{{ time(n.time) }}</span>
+          </div>
+          <div class="b" [class.muted]="n.read">{{ n.body }}</div>
+        </div>
+      </div>
+
+      <div class="right">
+        <button mat-icon-button matTooltip="Toggle read" (click)="toggleRead(n)">
+          <mat-icon>{{ n.read ? 'mark_email_read' : 'mark_email_unread' }}</mat-icon>
+        </button>
+        <button mat-icon-button matTooltip="Dismiss" (click)="clear(n.kind)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="empty" *ngIf="!filtered().length">
+      <mat-icon>inbox</mat-icon>
+      <div>No notifications</div>
+    </div>
+  </section>
+</div>

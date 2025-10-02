@@ -1,0 +1,149 @@
+<h2 class="title">Departments & Doctors</h2>
+
+<!-- Top bar: search + sort + add -->
+<div class="toolbar">
+  <mat-form-field appearance="outline" class="grow">
+    <mat-label>Search departments or doctors</mat-label>
+    <input matInput [formControl]="search" placeholder="e.g., Cardiology, Dr. Layla, active…" />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w">
+    <mat-label>Sort departments</mat-label>
+    <mat-select [formControl]="sortDept">
+      <mat-option value="asc">A → Z</mat-option>
+      <mat-option value="desc">Z → A</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<!-- Add Department (glassy card) -->
+<mat-card class="glass-card add-card">
+  <form [formGroup]="addForm" (ngSubmit)="addDepartment()" class="add-grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Department name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g., Oncology" />
+      <mat-error *ngIf="f.name.touched && f.name.errors?.['required']">Name is required</mat-error>
+      <mat-error *ngIf="f.name.touched && f.name.errors?.['minlength']">Min 3 characters</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description (optional)</mat-label>
+      <input matInput formControlName="description" placeholder="Short description" />
+    </mat-form-field>
+
+    <span class="grow"></span>
+    <button mat-flat-button color="primary" type="submit">
+      <mat-icon>add</mat-icon> Add Department
+    </button>
+  </form>
+</mat-card>
+
+<!-- Departments accordion -->
+<mat-accordion multi class="dept-accordion">
+  <mat-expansion-panel *ngFor="let dep of departments()" class="glass-panel">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <div class="dep-header">
+          <div class="dep-title">
+            <mat-icon class="dep-icon">medication</mat-icon>
+            <span class="name">{{ dep.name }}</span>
+            <span class="desc" *ngIf="dep.description"> — {{ dep.description }}</span>
+          </div>
+          <div class="meta">
+            <mat-chip class="count-chip" [matBadge]="dep.doctors.length" matBadgeColor="accent" matBadgeSize="small">
+              Doctors
+            </mat-chip>
+
+            <!-- If this panel is in edit mode, show Save/Cancel; otherwise show Edit/Delete -->
+            <ng-container *ngIf="editingId() === dep.id; else viewBtns">
+              <button mat-stroked-button color="primary" (click)="$event.stopPropagation(); saveDepartment(dep)">
+                <mat-icon>save</mat-icon> Save
+              </button>
+              <button mat-stroked-button (click)="$event.stopPropagation(); cancelEdit()">
+                <mat-icon>close</mat-icon> Cancel
+              </button>
+            </ng-container>
+            <ng-template #viewBtns>
+              <button mat-stroked-button color="primary" (click)="$event.stopPropagation(); editDepartment(dep)">
+                <mat-icon>edit</mat-icon> Edit
+              </button>
+              <button mat-stroked-button color="warn" (click)="$event.stopPropagation(); removeDepartment(dep)">
+                <mat-icon>delete</mat-icon> Delete
+              </button>
+            </ng-template>
+          </div>
+        </div>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <!-- Inline EDIT FORM for this department -->
+    <form *ngIf="editingId() === dep.id" [formGroup]="editForm" class="edit-grid" (ngSubmit)="saveDepartment(dep)">
+      <mat-form-field appearance="outline">
+        <mat-label>Department name</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="editForm.controls.name.touched && editForm.controls.name.errors?.['required']">
+          Name is required
+        </mat-error>
+        <mat-error *ngIf="editForm.controls.name.touched && editForm.controls.name.errors?.['minlength']">
+          Min 3 characters
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description" />
+      </mat-form-field>
+
+      <span class="grow"></span>
+      <button mat-flat-button color="primary" type="submit">
+        <mat-icon>save</mat-icon> Save
+      </button>
+      <button mat-stroked-button type="button" (click)="cancelEdit()">
+        <mat-icon>close</mat-icon> Cancel
+      </button>
+    </form>
+
+    <!-- Doctors grid (hidden while editing? keep visible) -->
+    <section class="docs-grid" *ngIf="dep.doctors.length; else empty">
+      <mat-card class="doc-card" *ngFor="let doc of dep.doctors">
+        <div class="doc-row">
+          <div class="doc-name">{{ doc.name }}</div>
+          <mat-chip [color]="doc.status==='active' ? 'primary' : 'warn'">{{ doc.status }}</mat-chip>
+        </div>
+        <div class="doc-meta">
+          <div class="row">
+            <mat-icon>mail</mat-icon>
+            <a [href]="'mailto:'+doc.email" class="link">{{ doc.email }}</a>
+          </div>
+          <div class="row">
+            <mat-icon>history</mat-icon>
+            <span class="muted">{{ doc.sessions || 0 }} sessions</span>
+          </div>
+          <div class="row" *ngIf="doc.rating">
+            <mat-icon>star</mat-icon>
+            <span class="muted">{{ doc.rating }}/5</span>
+          </div>
+        </div>
+        <div class="doc-actions">
+          <button mat-stroked-button (click)="viewDoctor(dep, doc)">
+            <mat-icon>visibility</mat-icon> View
+          </button>
+          <button mat-stroked-button color="primary" *ngIf="doc.status==='inactive'" (click)="activateDoctor(dep, doc)">
+            <mat-icon>toggle_on</mat-icon> Activate
+          </button>
+          <button mat-stroked-button color="warn" *ngIf="doc.status==='active'" (click)="deactivateDoctor(dep, doc)">
+            <mat-icon>toggle_off</mat-icon> Deactivate
+          </button>
+        </div>
+      </mat-card>
+    </section>
+
+    <ng-template #empty>
+      <div class="empty">
+        <mat-icon>group_off</mat-icon>
+        <span>No doctors in this department yet.</span>
+      </div>
+    </ng-template>
+  </mat-expansion-panel>
+</mat-accordion>

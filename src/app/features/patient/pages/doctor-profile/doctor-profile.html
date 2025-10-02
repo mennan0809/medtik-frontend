@@ -1,0 +1,199 @@
+<div class="doc-wrap">
+  <!-- Hero -->
+  <section class="hero card">
+    <div class="left">
+      <div class="avatar-wrap">
+        <img class="avatar" [src]="doctor().avatar" alt="" />
+        <span class="glow"></span>
+      </div>
+      <div class="id">
+        <div class="name">{{ doctor().name }}</div>
+        <div class="meta">
+          <span class="dept">{{ doctor().department }}</span>
+          <span class="dot">•</span>
+          <span class="exp">{{ doctor().yearsExp }} yrs</span>
+          <span class="dot">•</span>
+          <span class="loc">{{ doctor().country }}</span>
+        </div>
+        <div class="rating">
+          <mat-icon>star</mat-icon>
+          <span>{{ doctor().rating.avg | number:'1.1-1' }}</span>
+          <span class="muted">({{ doctor().rating.count }})</span>
+        </div>
+
+        <div class="langs">
+          <span class="pill" *ngFor="let l of doctor().languages">{{ l }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="next" *ngIf="nextAvailable() as n; else noNext">
+        <div class="muted">Next available</div>
+        <div class="val">{{ daysLabels[n.dayIdx] }} • {{ timeRange(n) }}</div>
+      </div>
+      <ng-template #noNext>
+        <div class="muted">Next available</div>
+        <div class="val">No slots this week</div>
+      </ng-template>
+
+      <div class="cta">
+        <button mat-flat-button color="primary" (click)="bookNow()">
+          <mat-icon>event_available</mat-icon> Book now
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing by modality -->
+  <section class="card pricing">
+    <h3>Consultation types & fees</h3>
+    <div class="mods">
+      <button class="mod-card chat" type="button" (click)="pickModality('chat')"
+              [class.active]="selectedModality()==='chat'">
+        <div class="icon"><mat-icon>chat</mat-icon></div>
+        <div class="label">
+          <strong>Chat</strong>
+          <small>{{ price().value }} {{ price().currency }}</small>
+        </div>
+        <div class="go"><mat-icon>arrow_forward</mat-icon></div>
+      </button>
+
+      <button class="mod-card voice" type="button" (click)="pickModality('voice')"
+              [class.active]="selectedModality()==='voice'">
+        <div class="icon"><mat-icon>call</mat-icon></div>
+        <div class="label">
+          <strong>Voice</strong>
+          <small>{{ price().value }} {{ price().currency }}</small>
+        </div>
+        <div class="go"><mat-icon>arrow_forward</mat-icon></div>
+      </button>
+
+      <button class="mod-card video" type="button" (click)="pickModality('video')"
+              [class.active]="selectedModality()==='video'">
+        <div class="icon"><mat-icon>videocam</mat-icon></div>
+        <div class="label">
+          <strong>Video</strong>
+          <small>{{ price().value }} {{ price().currency }}</small>
+        </div>
+        <div class="go"><mat-icon>arrow_forward</mat-icon></div>
+      </button>
+    </div>
+
+    <div class="actions">
+      <button mat-stroked-button (click)="bookNow(selectedModality())">
+        <mat-icon>calendar_month</mat-icon> Continue to booking
+      </button>
+    </div>
+  </section>
+
+  <!-- Availability -->
+  <section class="card availability">
+    <div class="toolbar">
+      <div class="title">
+        <mat-icon>schedule</mat-icon>
+        <h3>Availability</h3>
+        <div class="week-controls">
+          <button mat-icon-button (click)="prevWeek()" matTooltip="Previous week"><mat-icon>chevron_left</mat-icon></button>
+          <span class="week">{{ weekLabel() }}</span>
+          <button mat-icon-button (click)="nextWeek()" matTooltip="Next week"><mat-icon>chevron_right</mat-icon></button>
+          <button mat-stroked-button class="this-week" (click)="thisWeek()">This week</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="week-grid">
+      <section class="day-card" *ngFor="let d of daysIdx">
+        <header class="day-head">
+          <div class="name">{{ daysLabels[d] }}</div>
+          <div class="legend">
+            <span class="chip chat">Chat</span>
+            <span class="chip voice">Voice</span>
+            <span class="chip video">Video</span>
+          </div>
+        </header>
+
+        <div class="slots" *ngIf="(slotsForDay(d)()).length; else emptyDay">
+          <div class="slot"
+               *ngFor="let s of slotsForDay(d)()"
+               [ngClass]="classFor(s)"
+               matTooltip="Pick time on the booking page">
+            <div class="time"><mat-icon>schedule</mat-icon> {{ timeRange(s) }}</div>
+            <div class="mods">
+              <span class="pill" *ngFor="let m of s.modalities">{{ m }}</span>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #emptyDay>
+          <div class="empty"><mat-icon>event_busy</mat-icon> No slots</div>
+        </ng-template>
+      </section>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section class="card about">
+    <h3>About {{ doctor().name.split(' ')[0] }}</h3>
+    <p class="bio">{{ doctor().bio }}</p>
+
+    <div class="cols">
+      <div>
+        <h4>Subspecialties</h4>
+        <div class="chips">
+          <span class="pill" *ngFor="let s of doctor().subspecialties">{{ s }}</span>
+        </div>
+      </div>
+      <div>
+        <h4>Common conditions</h4>
+        <div class="chips">
+          <span class="pill" *ngFor="let c of doctor().conditions">{{ c }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="policies">
+      <h4>Policies</h4>
+      <ul>
+        <li><mat-icon>gavel</mat-icon> {{ doctor().policies.cancellation }}</li>
+        <li><mat-icon>event_repeat</mat-icon> {{ doctor().policies.reschedule }}</li>
+        <li><mat-icon>policy</mat-icon> {{ doctor().policies.refund }}</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Reviews teaser -->
+  <section class="card reviews">
+    <div class="head">
+      <h3>Patient reviews</h3>
+      <button mat-stroked-button (click)="seeAllReviews()">
+        <mat-icon>rate_review</mat-icon> See all
+      </button>
+    </div>
+
+    <div class="review-list">
+      <div class="rev" *ngFor="let r of doctor().reviews">
+        <div class="r-head">
+          <div class="author">{{ r.name }}</div>
+          <div class="stars">
+            <mat-icon *ngFor="let s of [1,2,3,4,5]">{{ s <= r.rating ? 'star' : 'star_border' }}</mat-icon>
+          </div>
+        </div>
+        <div class="text">{{ r.text }}</div>
+        <div class="date muted">{{ r.date | date:'mediumDate' }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sticky bottom bar -->
+  <div class="sticky-cta">
+    <div class="price">
+      <span class="muted">Selected</span>
+      <span class="pill mod">{{ selectedModality() }}</span>
+      <span class="val">{{ price().value }} {{ price().currency }}</span>
+    </div>
+    <button mat-flat-button color="primary" (click)="bookNow(selectedModality())">
+      <mat-icon>event_available</mat-icon> Book {{ selectedModality() }}
+    </button>
+  </div>
+</div>

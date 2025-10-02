@@ -1,0 +1,103 @@
+<h2 class="title">Notifications</h2>
+
+<!-- Top toolbar -->
+<div class="toolbar">
+  <!-- Filter chips bound to a FormControl -->
+  <mat-chip-listbox class="filters" [multiple]="false" [formControl]="filterCtrl">
+    <mat-chip-option value="All">All</mat-chip-option>
+    <mat-chip-option value="Unread">Unread</mat-chip-option>
+    <mat-chip-option value="System">System</mat-chip-option>
+    <mat-chip-option value="Requests">Requests</mat-chip-option>
+    <mat-chip-option value="Payments">Payments</mat-chip-option>
+    <mat-chip-option value="Users">Users</mat-chip-option>
+  </mat-chip-listbox>
+
+  <mat-form-field appearance="outline" class="search">
+    <mat-label>Search notifications</mat-label>
+    <input matInput [formControl]="search" placeholder="Title, message, type">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-stroked-button (click)="markAllRead()" matTooltip="Mark all as read">
+      <mat-icon>done_all</mat-icon> Mark all read
+    </button>
+    <button mat-stroked-button color="warn" (click)="clearAll()" matTooltip="Clear all notifications">
+      <mat-icon>delete_sweep</mat-icon> Clear all
+    </button>
+  </div>
+</div>
+
+<!-- Glassy list -->
+<div class="list glass">
+  <div class="item" *ngFor="let n of page()">
+    <div class="left">
+      <div class="icon-wrap" [class.unread]="n.unread">
+        <mat-icon class="type-icon" [ngClass]="n.type.toLowerCase()">{{
+          n.type === 'System'   ? 'settings' :
+          n.type === 'Requests' ? 'tune'     :
+          n.type === 'Payments' ? 'payments' : 'group'
+        }}</mat-icon>
+      </div>
+    </div>
+
+    <div class="mid">
+      <div class="row1">
+        <div class="title-text">{{ n.title }}</div>
+        <mat-chip class="type-chip" [color]="
+          n.type==='Requests' ? 'accent' :
+          n.type==='Payments' ? 'primary' : 'warn'
+        ">{{ n.type }}</mat-chip>
+      </div>
+
+      <div class="message">{{ n.message }}</div>
+
+      <div class="meta">
+        <mat-icon>event</mat-icon>
+        <span>{{ n.date | date:'MMM d, y • h:mm a' }}</span>
+      </div>
+    </div>
+
+    <div class="right">
+      <button *ngIf="n.unread" mat-icon-button (click)="markRead(n)" matTooltip="Mark as read">
+        <mat-icon>mark_email_read</mat-icon>
+      </button>
+      <button *ngIf="!n.unread" mat-icon-button (click)="markUnread(n)" matTooltip="Mark as unread">
+        <mat-icon>mark_email_unread</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="delete(n)" matTooltip="Delete">
+        <mat-icon>delete</mat-icon>
+      </button>
+
+      <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="markRead(n)">
+          <mat-icon>done</mat-icon><span>Mark read</span>
+        </button>
+        <button mat-menu-item (click)="markUnread(n)">
+          <mat-icon>undo</mat-icon><span>Mark unread</span>
+        </button>
+        <button mat-menu-item (click)="delete(n)">
+          <mat-icon>delete</mat-icon><span>Delete</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+
+  <div class="empty" *ngIf="!sorted().length">
+    <mat-icon>notifications_off</mat-icon>
+    <span>No notifications</span>
+  </div>
+</div>
+
+<!-- Paginator -->
+<mat-paginator
+  class="pager"
+  [length]="sorted().length"
+  [pageIndex]="pageIndex()"
+  [pageSize]="pageSize()"
+  [pageSizeOptions]="[8,12,16]"
+  (page)="pageChange($event)">
+</mat-paginator>

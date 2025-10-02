@@ -1,0 +1,116 @@
+<div class="patients-wrap">
+  <!-- Sticky tools -->
+  <div class="toolbar card">
+    <div class="title">
+      <mat-icon>groups</mat-icon>
+      <h2>Patients</h2>
+    </div>
+
+    <div class="controls">
+      <mat-form-field appearance="outline" class="search">
+        <mat-label>Search patients</mat-label>
+        <input
+          matInput
+          placeholder="Name, condition, tag, medication…"
+          [value]="query()"
+          (input)="query.set($any($event.target).value)" />
+      </mat-form-field>
+
+      <mat-button-toggle-group
+        class="filters"
+        [value]="filter()"
+        (change)="filter.set($event.value)"
+        aria-label="Filter">
+        <mat-button-toggle value="all"><mat-icon>all_inclusive</mat-icon> All</mat-button-toggle>
+        <mat-button-toggle value="active"><mat-icon>verified_user</mat-icon> Active</mat-button-toggle>
+        <mat-button-toggle value="followup"><mat-icon>event_upcoming</mat-icon> Follow-up due</mat-button-toggle>
+        <mat-button-toggle value="new"><mat-icon>sparkles</mat-icon> New</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <mat-menu #sortMenu="matMenu">
+        <button mat-menu-item (click)="sortBy.set('recent')"><mat-icon>schedule</mat-icon><span>Last visit</span></button>
+        <button mat-menu-item (click)="sortBy.set('name')"><mat-icon>sort_by_alpha</mat-icon><span>Name A–Z</span></button>
+        <button mat-menu-item (click)="sortBy.set('age')"><mat-icon>elderly</mat-icon><span>Age</span></button>
+      </mat-menu>
+      <button mat-stroked-button [matMenuTriggerFor]="sortMenu">
+        <mat-icon>tune</mat-icon> Sort
+      </button>
+    </div>
+  </div>
+
+  <!-- Grid of patient cards -->
+  <div class="grid">
+    <div class="card pcard" *ngFor="let p of filtered(); trackBy: trackById">
+      <div class="head">
+        <div class="left">
+          <img [src]="p.avatar" alt="" class="avatar" />
+          <div class="meta">
+            <div class="name">{{ p.name }}</div>
+            <div class="sub">
+              <span>{{ p.sex }} · {{ p.age }}</span>
+              <span class="dot">•</span>
+              <span class="muted">{{ p.country || '—' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="right">
+          <span class="pill" [ngClass]="pillStatus(p)">
+            <ng-container *ngIf="pillStatus(p).new">New</ng-container>
+            <ng-container *ngIf="!pillStatus(p).new && pillStatus(p).active">Active</ng-container>
+            <ng-container *ngIf="pillStatus(p).due && !pillStatus(p).new && !pillStatus(p).active">Follow-up</ng-container>
+          </span>
+        </div>
+      </div>
+
+      <mat-divider />
+
+      <div class="body">
+        <div class="row">
+          <mat-icon class="ico">medical_information</mat-icon>
+          <div class="chips">
+            <span class="chip" *ngFor="let c of p.conditions">{{ c }}</span>
+          </div>
+        </div>
+        <div class="row" *ngIf="p.meds?.length">
+          <mat-icon class="ico">medication</mat-icon>
+          <div class="chips">
+            <span class="chip ghost" *ngFor="let m of p.meds">{{ m }}</span>
+          </div>
+        </div>
+        <div class="row" *ngIf="p.tags?.length">
+          <mat-icon class="ico">label</mat-icon>
+          <div class="chips">
+            <span class="tag" [ngClass]="tagClass(t)" *ngFor="let t of p.tags">{{ t }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="foot">
+        <div class="times">
+          <div><span class="k">Last visit</span><span class="v">{{ date(p.lastVisit) }}</span></div>
+          <div><span class="k">Next</span><span class="v">{{ date(p.nextVisit) }}</span></div>
+        </div>
+        <div class="actions">
+          <button mat-stroked-button (click)="openChart(p)" matTooltip="Open patient chart">
+            <mat-icon>folder_shared</mat-icon> Chart
+          </button>
+          <button mat-stroked-button (click)="startChat(p)" matTooltip="Chat with patient">
+            <mat-icon>chat</mat-icon> Chat
+          </button>
+          <button mat-stroked-button (click)="book(p)" matTooltip="Book follow-up">
+            <mat-icon>event</mat-icon> Book
+          </button>
+          <button mat-flat-button color="primary" (click)="addNote(p)">
+            <mat-icon>note_add</mat-icon> Add note
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty" *ngIf="!filtered().length">
+      <mat-icon>group_off</mat-icon>
+      <div>No patients match your filters</div>
+    </div>
+  </div>
+</div>

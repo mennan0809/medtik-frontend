@@ -1,0 +1,194 @@
+<div class="booking-wrap">
+  <!-- Title / breadcrumbs -->
+  <div class="toolbar">
+    <div class="title">
+      <mat-icon>event_available</mat-icon>
+      <h2>Book appointment</h2>
+    </div>
+
+    <div class="week-controls">
+      <button mat-icon-button matTooltip="Previous week" (click)="prevWeek()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <span class="week">{{ weekLabel() }}</span>
+
+      <button mat-icon-button matTooltip="Next week" (click)="nextWeek()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <button mat-stroked-button class="this-week" (click)="thisWeek()">This week</button>
+    </div>
+  </div>
+
+  <!-- Doctor summary / price -->
+  <div class="doctor-card">
+    <img class="avatar" [src]="doctor().avatar" alt="">
+    <div class="info">
+      <div class="name">{{ doctor().name }}</div>
+      <div class="meta">
+        <span class="dept">{{ doctor().department }}</span>
+        <span class="dot">•</span>
+        <span class="country">{{ country() }}</span>
+      </div>
+    </div>
+    <div class="price" *ngIf="price() as p">
+      <div class="val">{{ p.value }} {{ p.currency }}</div>
+      <div class="muted">per {{ modality() }}</div>
+    </div>
+  </div>
+
+  <!-- Stepper -->
+  <div class="steps">
+    <div class="step" [class.active]="step()===1"><span>1</span> Choose modality</div>
+    <div class="step" [class.active]="step()===2"><span>2</span> Pick time</div>
+    <div class="step" [class.active]="step()===3"><span>3</span> Review & confirm</div>
+  </div>
+
+  <!-- Step 1: modality -->
+<!-- Step 1: modality (animated cards) -->
+<section *ngIf="step()===1" class="card modality">
+  <h3>Select a consultation type</h3>
+
+  <div class="mod-cards" role="group" aria-label="Choose modality">
+    <!-- Chat -->
+    <button type="button"
+            class="mod-card chat"
+            [class.active]="modality()==='chat'"
+            (click)="setModality('chat')">
+      <span class="halo"></span>
+      <div class="icon"><mat-icon>chat</mat-icon></div>
+      <div class="label">
+        <strong>Chat</strong>
+        <small>{{ doctor().prices[country()].chat }} {{ doctor().prices[country()].currency }}</small>
+      </div>
+    </button>
+
+    <!-- Voice -->
+    <button type="button"
+            class="mod-card voice"
+            [class.active]="modality()==='voice'"
+            (click)="setModality('voice')">
+      <span class="halo"></span>
+      <div class="icon"><mat-icon>call</mat-icon></div>
+      <div class="label">
+        <strong>Voice</strong>
+        <small>{{ doctor().prices[country()].voice }} {{ doctor().prices[country()].currency }}</small>
+      </div>
+    </button>
+
+    <!-- Video -->
+    <button type="button"
+            class="mod-card video"
+            [class.active]="modality()==='video'"
+            (click)="setModality('video')">
+      <span class="halo"></span>
+      <div class="icon"><mat-icon>videocam</mat-icon></div>
+      <div class="label">
+        <strong>Video</strong>
+        <small>{{ doctor().prices[country()].video }} {{ doctor().prices[country()].currency }}</small>
+      </div>
+    </button>
+  </div>
+
+  <div class="policies">
+    <mat-icon>gavel</mat-icon>
+    <span>{{ doctor().policies.cancellation }}</span>
+  </div>
+
+  <div class="actions">
+    <button mat-flat-button color="primary" (click)="next()">Next</button>
+  </div>
+</section>
+<!-- /Step 1 -->
+
+
+  <!-- Step 2: time picker -->
+  <section *ngIf="step()===2" class="card">
+    <h3>Choose a time</h3>
+
+    <div class="week-grid">
+      <section class="day-card" *ngFor="let d of daysIdx">
+        <header class="day-head">
+          <div class="name">{{ daysLabels[d] }}</div>
+          <div class="legend">
+            <span class="chip chat">Chat</span>
+            <span class="chip voice">Voice</span>
+            <span class="chip video">Video</span>
+          </div>
+        </header>
+
+        <div class="slots" *ngIf="(slotsForDay(d)()).length; else none">
+          <button
+            class="slot"
+            *ngFor="let s of slotsForDay(d)()"
+            [ngClass]="classFor(s)"
+            type="button"
+            (click)="pickSlot(s)"
+            [disabled]="classFor(s).incompatible">
+            <div class="time"><mat-icon>schedule</mat-icon>{{ timeRange(s) }}</div>
+            <div class="mods">
+              <span class="pill" *ngFor="let m of s.modalities">{{ m }}</span>
+            </div>
+          </button>
+        </div>
+        <ng-template #none>
+          <div class="empty"><mat-icon>event_busy</mat-icon> No slots</div>
+        </ng-template>
+      </section>
+    </div>
+
+    <div class="actions">
+      <button mat-button (click)="back()">Back</button>
+      <button mat-flat-button color="primary" (click)="next()">Next</button>
+    </div>
+  </section>
+
+  <!-- Step 3: review -->
+  <section *ngIf="step()===3" class="card">
+    <h3>Review & confirm</h3>
+    <div class="review">
+      <div><span class="muted">Type</span> <span class="pill big">{{ modality() }}</span></div>
+      <div><span class="muted">When</span>
+        <span class="pill big" *ngIf="selectedSlot() as s">{{ timeRange(s) }} ({{ daysLabels[s.dayIdx] }})</span>
+      </div>
+      <div *ngIf="price() as p"><span class="muted">Price</span> <span class="pill big">{{ p.value }} {{ p.currency }}</span></div>
+    </div>
+
+    <!-- Wrap inputs in a form + use formControlName (fixes TS2739) -->
+    <form [formGroup]="form" class="form">
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Reason for consultation</mat-label>
+        <textarea matInput rows="3" formControlName="reason"></textarea>
+        <mat-error *ngIf="form.controls['reason'].invalid && form.controls['reason'].touched">Required</mat-error>
+      </mat-form-field>
+
+      <div class="attach">
+        <mat-icon>attach_file</mat-icon>
+        <label>
+          Attach files (optional)
+          <input
+            type="file"
+            (change)="form.controls['attachments'].setValue($event.target?.['files'] ?? null)"
+            multiple>
+        </label>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="policies">
+        <mat-icon>policy</mat-icon>
+        <div>
+          <div>{{ doctor().policies.cancellation }}</div>
+          <div>{{ doctor().policies.reschedule }}</div>
+          <div>{{ doctor().policies.refund }}</div>
+        </div>
+      </div>
+    </form>
+
+    <div class="actions">
+      <button mat-button (click)="back()">Back</button>
+      <button mat-flat-button color="primary" (click)="confirm()" [disabled]="form.invalid">Confirm & pay</button>
+    </div>
+  </section>
+</div>

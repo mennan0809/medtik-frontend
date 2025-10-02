@@ -1,0 +1,61 @@
+<mat-sidenav-container class="shell">
+  <mat-sidenav #snav mode="side" opened class="side" [@slideIn]>
+    <div class="brand">
+      <img class="brand-logo" [src]="logoUrl" alt="Medtik" />
+      <span>Medtik • Admin</span>
+    </div>
+
+    <mat-nav-list>
+      <!-- Six core admin pages (your requested features) -->
+      <a mat-list-item routerLink="users" routerLinkActive="active">
+        <mat-icon>group</mat-icon><span>Users</span>
+      </a>
+      <a mat-list-item routerLink="transactions" routerLinkActive="active">
+        <mat-icon>receipt_long</mat-icon><span>Transactions</span>
+      </a>
+      <a mat-list-item routerLink="add-doctor" routerLinkActive="active">
+        <mat-icon>person_add</mat-icon><span>Add Doctor</span>
+      </a>
+      <a mat-list-item routerLink="doctor-requests" routerLinkActive="active">
+        <mat-icon>how_to_reg</mat-icon><span>Doctor Requests</span>
+      </a>
+      <a mat-list-item routerLink="departments" routerLinkActive="active">
+        <mat-icon>apartment</mat-icon><span>Departments</span>
+      </a>
+
+      <!-- Optional utility pages for consistency -->
+      <a mat-list-item routerLink="settings" routerLinkActive="active">
+        <mat-icon>settings</mat-icon><span>Settings</span>
+      </a>
+      <a mat-list-item routerLink="notifications" routerLinkActive="active">
+        <mat-icon matBadge="3" matBadgeColor="accent">notifications</mat-icon>
+        <span>Notifications</span>
+      </a>
+      <a mat-list-item routerLink="help" routerLinkActive="active">
+        <mat-icon>help</mat-icon><span>Help</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content">
+    <mat-toolbar class="topbar">
+      <button mat-icon-button (click)="snav.toggle()" class="hide-desktop">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <span class="grow"></span>
+
+      <button mat-stroked-button color="primary" routerLink="/admin/doctor-requests">
+        <mat-icon>inbox</mat-icon> Review Requests
+      </button>
+
+      <button mat-button class="user">
+        <mat-icon>admin_panel_settings</mat-icon> Admin
+      </button>
+    </mat-toolbar>
+
+    <div class="page">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,71 @@
+<h2 class="title">Sessions</h2>
+
+<div class="toolbar">
+  <mat-form-field appearance="outline" class="search">
+    <mat-label>Search sessions</mat-label>
+    <input matInput [formControl]="filterCtrl" placeholder="ID, patient, doctor, department, type">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+</div>
+
+<div class="table-wrap mat-elevation-z2">
+  <table mat-table [dataSource]="data" matSort class="glass-table">
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+      <td mat-cell *matCellDef="let r">{{ r.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="patient">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Patient</th>
+      <td mat-cell *matCellDef="let r">{{ r.patient }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="doctor">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Doctor</th>
+      <td mat-cell *matCellDef="let r">{{ r.doctor }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="department">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
+      <td mat-cell *matCellDef="let r">{{ r.department }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+      <td mat-cell *matCellDef="let r">
+        <mat-chip [color]="r.type==='video' ? 'primary' : (r.type==='voice' ? 'accent' : 'warn')">
+          {{ r.type }}
+        </mat-chip>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+      <!-- Pretty date: Jan 15, 2025 • 9:30 AM -->
+      <td mat-cell *matCellDef="let r">{{ r.date | date:'MMM d, y • h:mm a' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let r" class="actions">
+        <button mat-stroked-button (click)="view(r)" matTooltip="View details">
+          <mat-icon>visibility</mat-icon> View
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="cols" class="sticky"></tr>
+    <tr mat-row *matRowDef="let row; columns: cols;" class="row"></tr>
+  </table>
+
+  <div class="table-footer">
+    <div class="range">{{ rangeLabel() }}</div>
+    <mat-paginator
+      [length]="data.filteredData.length"
+      [pageSize]="pageSize"
+      [hidePageSize]="true"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+</div>

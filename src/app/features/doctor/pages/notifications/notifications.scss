@@ -1,0 +1,33 @@
+.wrap { padding: 14px 12px; }
+.bar {
+  display: grid; gap: 12px; align-items: center; margin-bottom: 10px;
+  grid-template-columns: auto 1fr;
+}
+.title { display: flex; align-items: center; gap: 10px; }
+.controls {
+  display: flex; align-items: center; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
+}
+.search { width: min(340px, 45vw); }
+
+.list.card { padding: 8px; display: grid; gap: 8px; }
+.item {
+  display: grid; grid-template-columns: 1fr auto; gap: 10px;
+  padding: 12px; border: 1px solid var(--border); border-radius: 14px;
+  background: rgba(255,255,255,.03);
+}
+.left { display: flex; gap: 10px; align-items: flex-start; }
+.meta { display: grid; gap: 4px; }
+.t { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.title { font-weight: 800; }
+.time { opacity: .8; font-size: 12px; }
+.b.muted { opacity: .6; }
+.pill {
+  padding: 4px 10px; border-radius: 999px; font-size: 12px; border: 1px solid var(--border);
+  text-transform: capitalize;
+}
+.pill.appointment { background: rgba(29,183,160,.16); }
+.pill.mention     { background: rgba(59,139,211,.16); }
+.pill.review      { background: rgba(234,179,8,.16);  }
+.pill.system      { background: rgba(148,163,184,.16);}
+.right { display: flex; gap: 6px; }
+.empty { text-align:center; opacity:.8; padding: 20px 0; display:grid; gap:6px;}

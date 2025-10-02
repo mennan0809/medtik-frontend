@@ -1,0 +1,36 @@
+/* Small, composable helpers shared across app */
+:root {
+  --ring-color: var(--brand-500);
+  --ring-offset: 2px;
+}
+
+/* Focus ring for a11y */
+.ring, [data-ring] {
+  outline: none;
+}
+.ring:focus-visible, [data-ring]:focus-visible {
+  outline: 2px solid var(--ring-color);
+  outline-offset: var(--ring-offset);
+}
+
+/* Shadows */
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow    { box-shadow: var(--shadow); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+
+/* Text */
+.text-muted { color: var(--muted); }
+.text-brand { color: var(--brand-500); }
+
+/* Radius */
+.rounded   { border-radius: var(--radius-md); }
+.rounded-lg{ border-radius: var(--radius-lg); }
+.rounded-xl{ border-radius: var(--radius-xl); }
+
+/* Spacing (a few useful ones) */
+.mt-1{ margin-top: .25rem; } .mt-2{ margin-top: .5rem; } .mt-3{ margin-top: .75rem; }
+.mb-1{ margin-bottom: .25rem; } .mb-2{ margin-bottom: .5rem; } .mb-3{ margin-bottom: .75rem; }
+
+/* Hide on desktop / mobile */
+.hide-desktop { display: none; }
+@media (max-width: 960px){ .hide-desktop { display: inline-flex; } }

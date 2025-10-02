@@ -1,0 +1,78 @@
+<div class="sched-wrap">
+  <!-- Header / filter -->
+  <div class="toolbar">
+    <div class="title">
+      <mat-icon>calendar_today</mat-icon>
+      <h2>Schedule</h2>
+
+      <!-- ▼ Week controls (new) -->
+      <div class="week-controls">
+        <button mat-icon-button matTooltip="Previous week" (click)="prevWeek()">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <span class="week">{{ weekLabel() }}</span>
+
+        <button mat-icon-button matTooltip="Next week" (click)="nextWeek()">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+
+        <button mat-stroked-button class="this-week" (click)="thisWeek()">This week</button>
+      </div>
+      <!-- ▲ Week controls -->
+    </div>
+
+    <!-- (keep your existing filters block unchanged) -->
+    <mat-button-toggle-group
+      class="filters"
+      [value]="activeFilter()"
+      (change)="setFilter($event.value)"
+      aria-label="Filter by modality">
+      <mat-button-toggle value="all"><mat-icon>all_inclusive</mat-icon> All</mat-button-toggle>
+      <mat-button-toggle value="chat"><mat-icon>chat</mat-icon> Chat</mat-button-toggle>
+      <mat-button-toggle value="voice"><mat-icon>call</mat-icon> Voice</mat-button-toggle>
+      <mat-button-toggle value="video"><mat-icon>videocam</mat-icon> Video</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Days grid (unchanged) -->
+  <div class="week-grid">
+    <section class="day-card" *ngFor="let d of daysIdx">
+      <header class="day-head">
+        <div class="name">{{ daysLabels[d] }}</div>
+        <div class="legend">
+          <span class="chip chat">Chat</span>
+          <span class="chip voice">Voice</span>
+          <span class="chip video">Video</span>
+        </div>
+      </header>
+
+      <div class="slots" *ngIf="(slotsForDay(d)()).length; else emptyDay">
+        <div
+          class="slot"
+          *ngFor="let s of slotsForDay(d)()"
+          [ngClass]="classFor(s)"
+          (click)="editSlot(s)"
+          matTooltip="Click to edit"
+        >
+          <div class="time">
+            <mat-icon>schedule</mat-icon>
+            {{ timeRange(s) }}
+          </div>
+          <div class="mods">
+            <span class="pill" *ngFor="let m of s.modalities">{{ m }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #emptyDay>
+        <div class="empty"><mat-icon>event_busy</mat-icon> No slots</div>
+      </ng-template>
+
+      <button mat-stroked-button class="add" (click)="addSlot(d)">
+        <mat-icon>add</mat-icon>
+        Add slot
+      </button>
+    </section>
+  </div>
+</div>

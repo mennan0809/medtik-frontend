@@ -1,0 +1,320 @@
+/* ======== Layout: vertical strip on top, wide chat under ======== */
+
+.chat-vert {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 12px 12px 28px;
+  display: grid;
+  gap: 18px;
+}
+
+/* --- Conversations strip (sticks to top while page scrolls) --- */
+.strip-panel.card {
+  position: sticky;
+  top: 8px;                     /* keep visible while page scrolls */
+  z-index: 5;
+  padding: 14px;
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.strip-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.strip-header .title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.strip-header .title h2 { margin: 0; }
+
+.strip-header .search {
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 40px 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+}
+.search-ico {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  translate: 0 -50%;
+  opacity: .7;
+}
+
+/* pill-like conversation tiles */
+.strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.03);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tile.active {
+  background: linear-gradient(180deg, rgba(29,183,160,.14), rgba(59,139,211,.10));
+  box-shadow: 0 8px 20px rgba(59,139,211,.18);
+}
+.tile .avatar { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; }
+.tile .meta { display: grid; line-height: 1.1; }
+.tile .name { font-weight: 700; letter-spacing: .2px; }
+.tile .sub  { font-size: 12px; opacity: .8; }
+.tile .time { margin-left: 6px; font-size: 12px; opacity: .75; }
+.tile .badge{ margin-left: 8px; font-size: 12px; background: var(--brand-600); color: #fff; padding: 2px 8px; border-radius: 999px; }
+
+/* --- Conversation panel (no fixed height; page scrolls) --- */
+.conversation.card.panel {
+  display: grid;
+  gap: 14px;
+  padding: 0 0 12px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+/* sticky chat header inside the panel */
+.conv-header {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(10,14,22,.95), rgba(10,14,22,.80));
+  backdrop-filter: blur(6px);
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+}
+.conv-header .doc { display: flex; align-items: center; gap: 12px; }
+.conv-header .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.conv-header .name { font-weight: 800; margin-bottom: 2px; }
+.conv-header .sub { font-size: 12.5px; opacity: .85; }
+.conv-header .presence {
+  width: 9px; height: 9px; border-radius: 50%; background: #22c55e; display: inline-block;
+  box-shadow: 0 0 0 3px rgba(34,197,94,.18);
+}
+
+.inline-search {
+  width: min(360px, 42vw);
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 0 12px;
+  background: rgba(255,255,255,.05);
+  color: var(--text);
+}
+
+/* Load earlier button block */
+.load { align-self: center; width: max-content; margin: 10px auto 0; }
+
+/* Conversation body grows naturally; page handles scrolling */
+.conv-body {
+  display: grid;
+  gap: 10px;
+  padding: 8px 16px 18px;
+  /* give a tall default so the window looks bigger */
+  min-height: 62vh;
+}
+
+/* message */
+.msg { display: grid; justify-content: start; gap: 6px; }
+.msg.me { justify-content: end; }
+
+.msg .stamp {
+  place-self: center;
+  font-size: 12px;
+  opacity: .8;
+  background: rgba(255,255,255,.06);
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.bubble {
+  max-width: 70ch;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.05);
+  line-height: 1.35;
+}
+.msg.me .bubble {
+  background: linear-gradient(180deg, rgba(59,139,211,.18), rgba(29,183,160,.12));
+  border-color: rgba(59,139,211,.25);
+}
+
+.msg .meta {
+  font-size: 12px;
+  opacity: .8;
+  margin-top: 2px;
+  text-align: right;
+}
+
+/* sticky composer at the bottom of the viewport for comfort */
+.composer {
+  position: sticky;
+  bottom: 8px;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 0 12px 8px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(10,14,22,.90), rgba(10,14,22,.86));
+  backdrop-filter: blur(6px);
+}
+.composer .draft {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  padding: 0 12px;
+}
+.composer .ghost { opacity: .8; }
+///////////////////
+/* --- Conversation panel: internal scroll --- */
+:root { --chat-offset: 180px; } /* tweak if your top area gets taller/shorter */
+
+.conversation.card.panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto; /* header | body(scroll) | composer */
+  gap: 14px;
+  padding: 0 0 12px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+
+  /* viewport-bounded height so the body can scroll inside */
+  height: calc(100vh - var(--chat-offset));
+  max-height: 92vh;
+  overflow: hidden; /* no page scroll “bleed” */
+}
+
+/* sticky header stays pinned within the panel */
+.conv-header {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(10,14,22,.95), rgba(10,14,22,.80));
+  backdrop-filter: blur(6px);
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+}
+
+/* conversation body is the vertical scroller */
+.conv-body {
+  display: grid;
+  gap: 10px;
+  padding: 8px 16px 18px;
+  overflow-y: auto;       /* <- scrolls inside here */
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable both-edges;
+}
+
+/* composer sits in the bottom grid row (NOT sticky now) */
+.composer {
+  position: relative;     /* remove sticky behavior */
+  bottom: auto;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 0 12px 8px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(10,14,22,.90), rgba(10,14,22,.86));
+  backdrop-filter: blur(6px);
+}
+/* ===== FIX: confine scrolling to the chat body; keep top areas fixed ===== */
+
+/* Make the whole chat page fill the viewport and stop page scrolling */
+.chat-vert{
+  height: 100dvh;                 /* dynamic viewport height (mobile-safe) */
+  overflow: hidden;               /* prevent page scroll; we'll scroll inside the chat */
+  display: grid;
+  grid-template-rows: auto 1fr;   /* strip on top, conversation fills the rest */
+}
+
+/* Strip already sticky; just ensure it overlays correctly */
+.strip-panel.card{
+  position: sticky;
+  top: 8px;
+  z-index: 8;                     /* above chat body while you scroll */
+}
+
+/* Conversation panel fills the remaining height and owns its internal scroll */
+.conversation.card.panel{
+  height: 100%;
+  overflow: hidden;               /* no outer scrolling */
+  display: grid;
+  grid-template-rows: auto minmax(0,1fr) auto;  /* header | body(scroll) | composer */
+  gap: 14px;
+}
+
+/* Header remains pinned inside the panel */
+.conv-header{
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+/* 👉 Only this area scrolls */
+.conv-body{
+  overflow-y: auto;               /* internal vertical scroll */
+  overflow-x: hidden;
+  min-height: 0;                  /* allow grid area to actually shrink */
+  padding: 8px 16px 18px;
+  scrollbar-gutter: stable both-edges;
+  overscroll-behavior: contain;
+}
+
+/* Composer anchored at the bottom row (not sticky) */
+.composer{
+  position: relative;             /* ensure it doesn’t float over messages */
+  bottom: auto;
+  margin: 0 12px 8px;
+}

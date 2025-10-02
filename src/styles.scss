@@ -1,0 +1,221 @@
+/* ----------------------------------------------------
+   MEDTIK — Global Design System (Dark default)
+   Tokens, base, utilities. 100% compatible with your
+   current pages (uses --surface, --text, --muted, etc.)
+----------------------------------------------------- */
+
+/* Material theme (colors/typography/density) */
+@use 'styles/material-theme';
+@use './styles/material-theme' as *;  /* <- this loads the Angular Material theme */
+@use './styles/utilities' as *;
+@use './styles/badges' as *;
+@use './styles/chips' as *;
+@use './styles/forms' as *;
+@use './styles/toasts' as *;
+@use './styles/dialogs' as *;
+@use './styles/empty' as *;
+@use './styles/grid' as *;
+
+
+/* ========== TOKENS ========== */
+:root, .theme-dark {
+  /* Brand */
+  --brand-600: #2A76B7;   /* Medtik blue */
+  --brand-500: #3B8BD3;
+  --brand-700: #155289;
+  --accent-500: #1DB7A0;  /* Teal */
+
+  /* Neutrals / Surfaces */
+  --bg: #0E1420;                          /* page background (dark) */
+  --surface: rgba(16,24,40,.72);          /* cards */
+  --surface-2: rgba(255,255,255,.04);     /* soft surfaces */
+  --border: rgba(255,255,255,.08);
+
+  /* Text */
+  --text: #E6EEF6;
+  --muted: #A7B4C5;
+
+  /* Semantic */
+  --success: #22c55e;  /* green-500 */
+  --warning: #f59e0b;  /* amber-500 */
+  --error:   #ef4444;  /* red-500 */
+  --info:    #60a5fa;  /* blue-400 */
+
+  /* Type & rhythm */
+  --font-sans: 'Inter', 'Cairo', ui-sans-serif, system-ui, -apple-system,
+               Segoe UI, Roboto, Arial, 'Noto Sans Arabic', sans-serif;
+  --fs-xs: 12px; --fs-sm: 13px; --fs-md: 14.5px; --fs-lg: 16px;
+  --fs-xl: 18px; --fs-2xl: 22px;
+  --lh-tight: 1.2; --lh-normal: 1.5;
+
+  /* Spacing */
+  --sp-2: 2px; --sp-4: 4px; --sp-6: 6px; --sp-8: 8px; --sp-12: 12px;
+  --sp-16: 16px; --sp-20: 20px; --sp-24: 24px; --sp-32: 32px;
+  --sp-40: 40px; --sp-56: 56px;
+
+  /* Radius */
+  --radius-xs: 6px; --radius-sm: 10px; --radius-md: 14px;
+  --radius-lg: 20px; --radius-xl: 24px; --radius-pill: 999px;
+
+  /* Shadows tuned for dark */
+  --shadow-sm: 0 6px 16px rgba(0,0,0,.30);
+  --shadow:    0 20px 60px rgba(0,0,0,.45);
+  --shadow-lg: 0 30px 80px rgba(0,0,0,.55);
+
+  /* Motion */
+  --dur-1: 120ms; --dur-2: 180ms; --dur-3: 260ms; --dur-4: 360ms;
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --ease-out: cubic-bezier(0,0,.2,1);
+  --ease-in: cubic-bezier(.4,0,1,1);
+
+  /* Layout */
+  --container: 1200px;
+  --z-drawer: 1000; --z-modal: 1100; --z-toast: 1200;
+}
+
+/* Optional light mode (add class="theme-light" on <body> to preview) */
+.theme-light {
+  --bg: #f7fbff;
+  --surface: #ffffff;
+  --surface-2: #f3f6fb;
+  --border: rgba(0,0,0,.08);
+  --text: #0b1220;
+  --muted: #4b5563;
+
+  --shadow-sm: 0 8px 20px rgba(0,0,0,.10);
+  --shadow:    0 20px 60px rgba(0,0,0,.12);
+  --shadow-lg: 0 30px 80px rgba(0,0,0,.16);
+}
+
+/* ========== BASE (keeps your same aurora page bg) ========== */
+html, body {
+  height: 100%;
+  font-family: var(--font-sans);
+  color: var(--text);
+  /* Aurora background that matches what you already use */
+  background:
+    radial-gradient(120% 80% at 50% 0, rgba(42,118,183,.12), transparent 60%),
+    radial-gradient(100% 60% at 100% 0, rgba(29,183,160,.10), transparent 50%),
+    var(--bg);
+}
+
+/* Reset-ish */
+* { box-sizing: border-box; }
+a { color: var(--brand-500); text-decoration: none; }
+a:hover { color: var(--text); }
+
+/* ========== UTILITIES / PRIMITIVES ========== */
+
+/* Card primitive (used by dashboards & stubs) */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+}
+
+/* Muted text */
+.muted { color: var(--muted); }
+
+/* Focus ring (apply via .ring or data attribute for a11y) */
+.ring, [data-ring] {
+  outline: none;
+}
+.ring:focus-visible, [data-ring]:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+/* Buttons (if/when you need a non-Material button) */
+.btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  height: 40px; padding: 0 .9rem; border-radius: 12px;
+  border: 1px solid transparent; cursor: pointer; user-select: none;
+  transition: background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease),
+              box-shadow var(--dur-2) var(--ease), transform var(--dur-1) var(--ease);
+}
+.btn:active { transform: translateY(1px); }
+
+/* Variants */
+.btn--primary {
+  background: var(--brand-600); color: white;
+  box-shadow: 0 10px 30px rgba(42,118,183,.35);
+}
+.btn--primary:hover { background: var(--brand-500); }
+.btn--stroked {
+  background: transparent; color: var(--text); border-color: var(--border);
+}
+.btn--ghost {
+  background: var(--surface-2); color: var(--text);
+  border-color: transparent;
+}
+
+/* Density helpers */
+.is-sm { height: 32px; padding: 0 .65rem; border-radius: 10px; }
+.is-lg { height: 48px; padding: 0 1.1rem; border-radius: 14px; }
+
+/* List row & active styles (used by sidenavs) */
+.nav-active {
+  background: rgba(255,255,255,.04);
+  border-left: 3px solid rgba(42,118,183,.7);
+}
+
+/* Skeletons */
+.skeleton {
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.10), rgba(255,255,255,.06));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: 0 0; }
+}
+
+/* Tables (generic) */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  padding: .75rem .9rem;
+  border-bottom: 1px solid var(--border);
+}
+.table tr:hover { background: rgba(255,255,255,.03); }
+
+/* Container helper */
+.container { max-width: var(--container); margin: 0 auto; padding: 0 var(--sp-16); }
+
+/* Make the dialog surface solid and visible */
+.medtik-dialog .mat-mdc-dialog-surface {
+  background: rgba(12,16,24,.98) !important;
+  border: 1px solid rgba(255,255,255,.07);
+  backdrop-filter: none !important;
+}
+
+/* Backdrop is a sibling overlay; target it globally */
+.cdk-overlay-backdrop {
+  backdrop-filter: none !important;         /* keep your choice */
+  background: rgba(0,0,0,.48);              /* ensure it’s visible */
+}
+
+/* Safety: make sure overlays sit above the app */
+.cdk-overlay-container { z-index: 1000; }
+
+/* Keep Material overlays above the app chrome */
+.cdk-overlay-container,
+.cdk-global-overlay-wrapper {
+  z-index: 10000 !important;
+}
+
+/* Ensure the backdrop is actually visible with dark themes */
+.cdk-overlay-backdrop.cdk-overlay-backdrop-showing {
+  background: rgba(0, 0, 0, .6) !important;
+}
+
+/* Your solid dialog skin (you already had something similar) */
+.medtik-dialog .mdc-dialog__surface {
+  background: rgba(12,16,24,.98) !important;
+  border: 1px solid rgba(255,255,255,.07);
+}

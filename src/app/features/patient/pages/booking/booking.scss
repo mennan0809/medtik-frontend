@@ -1,0 +1,313 @@
+.booking-wrap { padding: 1rem; }
+
+/* Header */
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem;
+  .title { display: flex; align-items: center; gap: .6rem;
+    h2 { margin: 0; font-weight: 800; letter-spacing: .2px; }
+  }
+  .week-controls {
+    display: inline-flex; align-items: center; gap: .25rem; flex-wrap: wrap;
+    .week { opacity: .8; padding: .25rem .5rem; border: 1px solid rgba(255,255,255,.07); border-radius: 10px; }
+    .this-week { border-radius: 999px; padding: .25rem .6rem; line-height: 1.2; }
+  }
+}
+
+/* Doctor mini card */
+.doctor-card {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 1rem;
+  align-items: center; margin-bottom: 1rem;
+  background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,.25); padding: .85rem;
+  .avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
+  .info { .name { font-weight: 700; } .meta { opacity: .8; display: flex; gap: .4rem; } .dot { opacity: .5; } }
+  .price { text-align: right; .val { font-weight: 800; } .muted { opacity: .7; font-size: .85rem; } }
+}
+
+/* Stepper */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; margin: .5rem 0 1rem;
+  .step { background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+    padding: .5rem .75rem; border-radius: 12px; display: flex; align-items: center; gap: .5rem; opacity: .7;
+    span { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.08); font-size: .8rem; }
+    &.active { opacity: 1; border-color: rgba(255,255,255,.12); }
+  }
+}
+
+/* Card shell */
+.card { background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,.25); padding: .85rem; }
+.card h3 { margin: 0 0 .75rem; }
+
+/* Modality toggles */
+.mods { border-radius: 9999px; overflow: hidden; }
+
+/* Week grid (reuses the schedule design) */
+.week-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 1200px) { .week-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px)  { .week-grid { grid-template-columns: 1fr; } }
+
+.day-card {
+  background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px; padding: .85rem; box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  .day-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+    padding-bottom: .5rem; margin-bottom: .5rem; border-bottom: 1px dashed rgba(255,255,255,.06);
+    .name { font-weight: 700; }
+    .legend { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .chip { font-size: .75rem; padding: .2rem .5rem; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04);
+      &.chat  { border-color: rgba(85,145,255,.5);  background: rgba(85,145,255,.08); }
+      &.voice { border-color: rgba(66,211,146,.5);  background: rgba(66,211,146,.08); }
+      &.video { border-color: rgba(183,140,255,.5); background: rgba(183,140,255,.08); }
+    }
+  }
+  .slots { display: grid; gap: .6rem; }
+  .slot {
+    width: 100%; text-align: left;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: .65rem .75rem; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(255,255,255,.03);
+    cursor: pointer; transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+    .time { display: flex; align-items: center; gap: .4rem; font-weight: 600; letter-spacing: .2px; }
+    .mods { display: flex; gap: .4rem; }
+    .pill { font-size: .75rem; padding: .15rem .5rem; border-radius: 999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); text-transform: capitalize; }
+    &:hover { transform: translateY(-1px); background: rgba(255,255,255,.05); }
+    &.selected { box-shadow: 0 0 0 2px rgba(85,145,255,.45) inset; }
+    &.incompatible { opacity: .45; cursor: not-allowed; }
+  }
+  .slot.chat  { border-left: 3px solid #5591ff; }
+  .slot.voice { border-left: 3px solid #42d392; }
+  .slot.video { border-left: 3px solid #b78cff; }
+  .slot.multi { border-left: 3px solid #9adcff; }
+
+  .empty { display: flex; align-items: center; gap: .4rem; padding: .65rem .75rem; border-radius: 12px; border: 1px dashed rgba(255,255,255,.10); opacity: .7; }
+}
+
+/* Review + form */
+.review { display: grid; gap: .5rem; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: .75rem;
+  .muted { opacity: .7; margin-right: .35rem; }
+  .pill.big { padding: .25rem .6rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04); text-transform: capitalize; }
+}
+.form { display: grid; gap: .75rem; }
+.attach { display: flex; align-items: center; gap: .5rem;
+  input[type=file] { display: block; margin-top: .25rem; }
+}
+.policies { display: flex; gap: .6rem; align-items: flex-start; opacity: .9; }
+.actions { display: flex; justify-content: flex-end; gap: .5rem; margin-top: .75rem; }
+
+/* Form paddings to avoid cropped labels in your theme */
+.mdc-text-field--outlined .mdc-text-field__input { padding-top: 12px !important; padding-bottom: 12px !important; line-height: 1 !important; }
+.mat-mdc-form-field { --mat-form-field-container-vertical-padding: 15px; }
+//////////////
+// Modality //
+/* Keep your existing page styles … */
+
+/* ---------- Modality cards (animated) ---------- */
+.modality-section {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  padding: 1rem 1rem 1.25rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  margin-bottom: 1rem;
+
+  .section-title {
+    margin: .25rem 0 1rem 0;
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+}
+
+.mod-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.mod-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  color: #eaf0ff;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: .75rem;
+  padding: .9rem .9rem;
+  text-align: left;
+  cursor: pointer;
+
+  /* micro-anim */
+  transform: translateY(0);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+
+  .halo {
+    content: "";
+    position: absolute;
+    inset: -40% -20%;
+    background: radial-gradient(80% 80% at 50% 50%, currentColor 0%, transparent 60%);
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s ease;
+  }
+
+  .icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+
+    mat-icon { font-size: 22px; width: 22px; height: 22px; }
+  }
+
+  .label {
+    display: flex; flex-direction: column; gap: .15rem;
+    strong { font-weight: 700; letter-spacing: .2px; }
+    small  { opacity: .8; }
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,.16);
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    .halo { opacity: .15; }
+  }
+
+  &.active {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(0,0,0,.25), 0 0 0 1px inset currentColor;
+    .icon { background: rgba(255,255,255,.10); }
+    .halo { opacity: .22; }
+  }
+
+  /* brand tints per modality */
+  &.chat  { color: #7ea6ff; }
+  &.voice { color: #65e0b9; }
+  &.video { color: #bba4ff; }
+}
+
+/* helper row under cards */
+.policy-line {
+  display: inline-flex; align-items: center; gap: .5rem;
+  margin-top: .8rem; opacity: .9;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.actions-right {
+  display: flex; justify-content: flex-end; margin-top: 1rem;
+}
+
+/* ---------- Make slot text white (both enabled & disabled renderers) ---------- */
+/* day cards you already have */
+.day-card .slot,
+.day-card .slot * {
+  color: #ffffff !important;
+}
+
+/* if you’re using mat-chips or mat-stroked-button for slots, force white too */
+.mat-mdc-standard-chip, .mat-mdc-standard-chip * { color: #ffffff !important; }
+.mat-mdc-stroked-button, .mat-mdc-stroked-button * { color: #ffffff !important; }
+
+/* optional: dim disabled/fully booked slots but keep white text */
+.slot.is-disabled {
+  opacity: .55;
+}
+
+/* fix for any browser default form colors inside the dark card */
+.modality-section input, .modality-section textarea {
+  color: #eaf0ff;
+}
+//////////////////////////////////////
+/* ---------- Step 1: Animated modality cards ---------- */
+.card.modality { padding-top: 1rem; }
+
+.mod-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
+}
+
+.mod-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  color: #eaf0ff;
+
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: .75rem;
+  padding: .9rem .95rem;
+  text-align: left;
+  cursor: pointer;
+
+  /* micro–motion */
+  transform: translateY(0);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease, filter .18s ease;
+
+  .halo {
+    content: "";
+    position: absolute;
+    inset: -40% -20%;
+    background: radial-gradient(80% 80% at 50% 50%, currentColor 0%, transparent 60%);
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s ease;
+  }
+
+  .icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+
+    mat-icon { font-size: 22px; width: 22px; height: 22px; }
+  }
+
+  .label { display: flex; flex-direction: column; gap: .15rem; }
+  .label strong { font-weight: 700; letter-spacing: .2px; }
+  .label small  { opacity: .8; }
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,.16);
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    .halo { opacity: .16; }
+  }
+
+  &.active {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px rgba(0,0,0,.25), 0 0 0 1px inset currentColor;
+    .icon { background: rgba(255,255,255,.10); }
+    .halo { opacity: .24; }
+  }
+
+  /* subtle entrance */
+  @keyframes modPop {
+    from { transform: translateY(6px) scale(.98); opacity: .0; }
+    to   { transform: translateY(0)   scale(1);   opacity: 1; }
+  }
+  animation: modPop .25s ease both;
+}
+
+/* Brand tints */
+.mod-card.chat  { color: #7ea6ff; }
+.mod-card.voice { color: #65e0b9; }
+.mod-card.video { color: #bba4ff; }
+
+/* Helper row under cards (re-use your existing style if present) */
+.card.modality .policies {
+  display: inline-flex; align-items: center; gap: .5rem;
+  margin-top: .85rem; opacity: .9;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}

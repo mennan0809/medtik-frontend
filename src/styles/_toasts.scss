@@ -1,0 +1,17 @@
+/* Snackbars (MatSnackBar) — variants via panelClass */
+.mat-mdc-snack-bar-container {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* Variant helpers */
+.toast--success .mat-mdc-snack-bar-container { background: color-mix(in oklab, var(--success) 22%, var(--surface) 78%); }
+.toast--error   .mat-mdc-snack-bar-container { background: color-mix(in oklab, var(--error)   22%, var(--surface) 78%); }
+.toast--warn    .mat-mdc-snack-bar-container { background: color-mix(in oklab, var(--warning) 22%, var(--surface) 78%); }
+.toast--info    .mat-mdc-snack-bar-container { background: color-mix(in oklab, var(--info)    22%, var(--surface) 78%); }
+
+/* Action button */
+.mat-mdc-snack-bar-action { color: #fff; text-transform: none; font-weight: 700; }

@@ -1,0 +1,50 @@
+/* Global polish for Angular Material form fields */
+@layer medtik-forms {
+  :root{
+    --field-bg: rgba(255,255,255,.04);
+    --field-bg-hover: rgba(255,255,255,.06);
+    --field-border: rgba(255,255,255,.10);
+    --field-border-focus: rgba(99,179,237,.85);
+  }
+
+  .mat-mdc-form-field{ width:100%; }
+
+  /* Size / spacing */
+  .mat-mdc-form-field .mat-mdc-form-field-infix{ padding:.675rem .875rem; }
+  .mdc-text-field--outlined{ height:44px; align-items:center; }
+  .mat-mdc-form-field-subscript-wrapper{ margin-top:.25rem; }
+
+  /* Background + borders (outline) */
+  .mat-mdc-form-field-appearance-outline .mdc-notched-outline__leading,
+  .mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch,
+  .mat-mdc-form-field-appearance-outline .mdc-notched-outline__trailing{
+    border-color: var(--field-border);
+  }
+  .mat-mdc-form-field-appearance-outline .mdc-notched-outline__leading,
+  .mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch,
+  .mat-mdc-form-field-appearance-outline .mdc-notched-outline__trailing{
+    background: var(--field-bg);
+    transition: background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    border-radius: 12px;
+  }
+  .mat-mdc-form-field:hover .mdc-notched-outline__leading,
+  .mat-mdc-form-field:hover .mdc-notched-outline__notch,
+  .mat-mdc-form-field:hover .mdc-notched-outline__trailing{
+    background: var(--field-bg-hover);
+  }
+  .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+  .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+  .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing{
+    border-color: var(--field-border-focus);
+    box-shadow: 0 0 0 3px rgba(56,189,248,.15);
+  }
+
+  .mat-mdc-input-element{ color: var(--text); }
+  .mat-mdc-form-field .mat-mdc-icon-prefix,
+  .mat-mdc-form-field .mat-mdc-icon-suffix{ color: var(--muted); opacity:.9; }
+
+  /* Hide number spinners for a cleaner look */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  input[type=number]{ -moz-appearance:textfield; }
+}

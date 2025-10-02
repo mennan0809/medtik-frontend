@@ -1,0 +1,218 @@
+<div class="profile-shell">
+  <!-- LEFT: Form -->
+  <section class="panel form-panel">
+    <header class="panel-head">
+      <div class="id">
+        <img class="avatar" [src]="fc.avatar.value" alt="avatar" />
+        <div>
+          <h2>Doctor profile</h2>
+          <p class="muted">Keep your public details up to date.</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button mat-stroked-button (click)="reset()"><mat-icon>refresh</mat-icon> Reset</button>
+        <button mat-flat-button color="primary" (click)="save()"><mat-icon>save</mat-icon> Save</button>
+      </div>
+    </header>
+
+    <!-- Identity -->
+    <div class="section">
+      <h3 class="section-title"><mat-icon>badge</mat-icon> Identity</h3>
+
+      <div class="grid">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Full name</mat-label>
+          <input matInput [formControl]="fc.name" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Title</mat-label>
+          <input matInput [formControl]="fc.title" placeholder="e.g., Consultant Pediatrician" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Department</mat-label>
+          <mat-select [formControl]="fc.department">
+            <mat-option *ngFor="let d of departments" [value]="d">{{ d }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Years of experience</mat-label>
+          <input matInput type="number" [formControl]="fc.yearsExperience" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>License / registration number</mat-label>
+          <input matInput [formControl]="fc.licenseNumber" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Avatar URL</mat-label>
+          <input matInput [formControl]="fc.avatar" />
+          <mat-hint>Paste an image URL (you can upload later)</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>About / bio</mat-label>
+          <textarea matInput rows="4" [formControl]="fc.about"></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- Professional -->
+    <div class="section">
+      <h3 class="section-title"><mat-icon>workspace_premium</mat-icon> Professional</h3>
+
+      <div class="chip-row">
+        <label>Languages</label>
+        <div class="chips">
+          <span class="chip" *ngFor="let c of array('languages').controls; let i = index">
+            {{ c.value }} <button type="button" class="x" (click)="removeChip('languages', i)">×</button>
+          </span>
+          <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('languages', $event)">
+        </div>
+      </div>
+
+      <div class="chip-row">
+        <label>Hospitals / clinics</label>
+        <div class="chips">
+          <span class="chip" *ngFor="let c of array('hospitals').controls; let i = index">
+            {{ c.value }} <button type="button" class="x" (click)="removeChip('hospitals', i)">×</button>
+          </span>
+          <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('hospitals', $event)">
+        </div>
+      </div>
+
+      <div class="chip-row">
+        <label>Education</label>
+        <div class="chips">
+          <span class="chip" *ngFor="let c of array('education').controls; let i = index">
+            {{ c.value }} <button type="button" class="x" (click)="removeChip('education', i)">×</button>
+          </span>
+          <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('education', $event)">
+        </div>
+      </div>
+
+      <div class="chip-row">
+        <label>Certificates</label>
+        <div class="chips">
+          <span class="chip" *ngFor="let c of array('certificates').controls; let i = index">
+            {{ c.value }} <button type="button" class="x" (click)="removeChip('certificates', i)">×</button>
+          </span>
+          <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('certificates', $event)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Availability & pricing -->
+    <div class="section">
+      <h3 class="section-title"><mat-icon>video_chat</mat-icon> Availability & pricing</h3>
+
+      <div class="mods">
+        <mat-slide-toggle [formControl]="ctrlChat"><mat-icon>chat</mat-icon> Chat</mat-slide-toggle>
+        <mat-slide-toggle [formControl]="ctrlVoice"><mat-icon>call</mat-icon> Voice</mat-slide-toggle>
+        <mat-slide-toggle [formControl]="ctrlVideo"><mat-icon>videocam</mat-icon> Video</mat-slide-toggle>
+      </div>
+
+      <mat-form-field appearance="outline" class="meet full">
+        <mat-label>Voice/video provider</mat-label>
+        <mat-select [formControl]="fc.externalMeetProvider">
+          <mat-option *ngFor="let p of meetProviders" [value]="p">{{ p }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="prices">
+        <div class="prices-head">
+          <span>Country</span><span>Currency</span><span>Chat</span><span>Voice</span><span>Video</span><span></span>
+        </div>
+
+        <div class="prices-row" *ngFor="let grp of priceGroups(); let i = index; trackBy: trackIndex" [formGroup]="grp">
+          <input class="mini" type="text"   formControlName="country" />
+          <input class="mini" type="text"   formControlName="currency" />
+          <input class="mini" type="number" formControlName="chat" />
+          <input class="mini" type="number" formControlName="voice" />
+          <input class="mini" type="number" formControlName="video" />
+          <button type="button" class="icon danger" mat-icon-button (click)="removePriceRow(i)" matTooltip="Remove">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+
+        <button mat-stroked-button class="add-price" (click)="addPriceRow()">
+          <mat-icon>add</mat-icon> Add country price
+        </button>
+      </div>
+    </div>
+
+    <!-- Policies -->
+    <div class="section">
+      <h3 class="section-title"><mat-icon>policy</mat-icon> Policies</h3>
+      <div class="grid">
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Cancellation</mat-label>
+          <textarea matInput rows="3" [formControl]="polCancellation"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Refund</mat-label>
+          <textarea matInput rows="3" [formControl]="polRefund"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Reschedule</mat-label>
+          <textarea matInput rows="3" [formControl]="polReschedule"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="footer-actions">
+        <button mat-stroked-button (click)="reset()"><mat-icon>refresh</mat-icon> Reset</button>
+        <button mat-flat-button color="primary" (click)="save()"><mat-icon>save</mat-icon> Save changes</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Public preview -->
+  <aside class="panel preview-panel">
+    <div class="doc-card">
+      <header class="head">
+        <img [src]="preview().avatar" alt="" class="avatar-lg" />
+        <div class="meta">
+          <h3>{{ preview().name }}</h3>
+          <div class="sub">
+            <span class="title">{{ preview().title || 'Specialty' }}</span>
+            <span class="dot"></span>
+            <span class="pill">{{ preview().dept }}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="prices-preview">
+        <div class="row" *ngFor="let p of preview().prices">
+          <span class="cc">{{ p.country }}</span>
+          <span class="price"><mat-icon>chat_bubble</mat-icon> {{ priceLabel(p,'chat') }}</span>
+          <span class="price"><mat-icon>call</mat-icon> {{ priceLabel(p,'voice') }}</span>
+          <span class="price"><mat-icon>videocam</mat-icon> {{ priceLabel(p,'video') }}</span>
+        </div>
+      </div>
+
+      <div class="chips">
+        <span class="chip" *ngFor="let l of preview().langs">{{ l }}</span>
+      </div>
+
+      <p class="bio muted">{{ preview().about || 'Your bio will appear here.' }}</p>
+
+      <div class="lists">
+        <div class="list">
+          <h4><mat-icon>local_hospital</mat-icon> Hospitals / clinics</h4>
+          <ul><li *ngFor="let h of preview().hosps">{{ h }}</li></ul>
+        </div>
+        <div class="list">
+          <h4><mat-icon>school</mat-icon> Education</h4>
+          <ul><li *ngFor="let e of preview().edu">{{ e }}</li></ul>
+        </div>
+        <div class="list">
+          <h4><mat-icon>workspace_premium</mat-icon> Certificates</h4>
+          <ul><li *ngFor="let c of preview().certs">{{ c }}</li></ul>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>

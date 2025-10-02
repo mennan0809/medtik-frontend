@@ -1,0 +1,80 @@
+<div class="rec-wrap">
+  <!-- Header -->
+  <div class="toolbar">
+    <div class="title">
+      <mat-icon>folder_shared</mat-icon>
+      <h2>Medical records</h2>
+    </div>
+
+    <div class="controls">
+      <mat-form-field appearance="outline" class="search">
+        <mat-label>Search records</mat-label>
+        <input
+          matInput
+          placeholder="Title, notes, type..."
+          [value]="query()"
+          (input)="query.set($any($event.target).value)" />
+      </mat-form-field>
+
+      <mat-button-toggle-group
+        class="filters"
+        [value]="filter()"
+        (change)="filter.set($event.value)"
+        aria-label="Filter by type">
+        <mat-button-toggle value="all"><mat-icon>all_inclusive</mat-icon> All</mat-button-toggle>
+        <mat-button-toggle value="report"><mat-icon>description</mat-icon> Reports</mat-button-toggle>
+        <mat-button-toggle value="prescription"><mat-icon>medical_services</mat-icon> Prescriptions</mat-button-toggle>
+        <mat-button-toggle value="lab"><mat-icon>biotech</mat-icon> Labs</mat-button-toggle>
+        <mat-button-toggle value="imaging"><mat-icon>image</mat-icon> Imaging</mat-button-toggle>
+        <mat-button-toggle value="other"><mat-icon>insert_drive_file</mat-icon> Other</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <button mat-flat-button color="primary" class="add" (click)="openAdd()">
+        <mat-icon>add</mat-icon> Add record
+      </button>
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <div class="grid">
+    <div class="card" *ngFor="let r of filtered()" (click)="preview(r)" matTooltip="Click to preview">
+      <div class="thumb" [class.is-img]="!!r.thumb" [class.is-pdf]="isPDF(r.mime)">
+        <!-- Prefer a generated thumbnail if present; otherwise icons -->
+        <img *ngIf="r.thumb" [src]="r.thumb" alt="" />
+        <ng-container *ngIf="!r.thumb">
+          <mat-icon *ngIf="isPDF(r.mime)">picture_as_pdf</mat-icon>
+          <mat-icon *ngIf="!isPDF(r.mime)">insert_drive_file</mat-icon>
+        </ng-container>
+        <span class="pill type" [ngClass]="pillClass(r.type)">{{ r.type }}</span>
+      </div>
+
+      <div class="info">
+        <div class="name">{{ r.name }}</div>
+        <div class="meta">
+          <span>{{ dateLabel(r.createdAt) }}</span>
+          <span class="dot">•</span>
+          <span>{{ r.sizeKB }} KB</span>
+        </div>
+        <div class="notes" *ngIf="r.notes">{{ r.notes }}</div>
+      </div>
+
+      <div class="actions" (click)="$event.stopPropagation()">
+        <button mat-icon-button [matMenuTriggerFor]="m" matTooltip="More">
+          <mat-icon>more_horiz</mat-icon>
+        </button>
+        <mat-menu #m="matMenu">
+          <button mat-menu-item (click)="preview(r)"><mat-icon>visibility</mat-icon><span>Preview</span></button>
+          <button mat-menu-item (click)="download(r)"><mat-icon>download</mat-icon><span>Download</span></button>
+          <button mat-menu-item (click)="openEdit(r)"><mat-icon>edit</mat-icon><span>Edit</span></button>
+          <button mat-menu-item (click)="delete(r)" class="warn"><mat-icon>delete</mat-icon><span>Delete</span></button>
+        </mat-menu>
+      </div>
+    </div>
+
+    <div class="empty" *ngIf="!filtered().length">
+      <mat-icon>inbox</mat-icon>
+      <div>No records found</div>
+      <button mat-stroked-button (click)="openAdd()"><mat-icon>add</mat-icon> Add your first record</button>
+    </div>
+  </div>
+</div>

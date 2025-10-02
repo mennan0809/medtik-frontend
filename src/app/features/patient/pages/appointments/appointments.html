@@ -1,0 +1,125 @@
+<div class="appt-wrap">
+  <!-- Header -->
+  <div class="toolbar">
+    <div class="title">
+      <mat-icon>event_note</mat-icon>
+      <h2>Appointments</h2>
+    </div>
+  </div>
+
+  <!-- UPCOMING -->
+  <section class="block">
+    <h3 class="block-title">
+      <span class="glow-dot up"></span>
+      <mat-icon>schedule</mat-icon> Upcoming
+    </h3>
+
+    <div *ngIf="upcoming().length; else emptyUpcoming" class="grid">
+      <div class="card neon" *ngFor="let a of upcoming()">
+        <div class="head">
+          <img class="avatar" [src]="a.doctor.avatar" alt="">
+          <div class="info">
+            <div class="name">{{ a.doctor.name }}</div>
+            <div class="meta">
+              <span class="dept">{{ a.doctor.department }}</span>
+              <span class="dot">•</span>
+              <span class="when">{{ toLocal(a.startUtc) }}</span>
+            </div>
+          </div>
+          <div class="price">
+            <div class="val">{{ a.price.value }} {{ a.price.currency }}</div>
+            <div class="muted">per {{ a.modality }}</div>
+          </div>
+        </div>
+
+        <div class="tags">
+          <span class="pill status" [ngClass]="statusClass(a)">
+            <mat-icon *ngIf="a.status==='scheduled'">schedule</mat-icon>
+            <mat-icon *ngIf="a.status==='completed'">check_circle</mat-icon>
+            <mat-icon *ngIf="a.status==='canceled'">cancel</mat-icon>
+            <mat-icon *ngIf="a.status==='no_show'">report</mat-icon>
+            {{ a.status }}
+          </span>
+          <span class="pill modality" [ngClass]="a.modality">{{ a.modality }}</span>
+          <span class="countdown" *ngIf="a.status==='scheduled'">{{ countdown(a) }}</span>
+        </div>
+
+        <div class="row-actions">
+          <button
+            mat-flat-button
+            color="primary"
+            class="join"
+            [disabled]="!canJoin(a)"
+            (click)="join(a)"
+            matTooltip="Join becomes active 10 minutes before start">
+            <mat-icon>play_circle</mat-icon>
+            Join now
+          </button>
+          <button mat-stroked-button (click)="reschedule(a)">
+            <mat-icon>calendar_month</mat-icon> Reschedule
+          </button>
+          <button mat-stroked-button (click)="addToCalendar(a)">
+            <mat-icon>event</mat-icon> Add to calendar
+          </button>
+          <button mat-button color="warn" (click)="cancel(a)">
+            <mat-icon>cancel</mat-icon> Cancel
+          </button>
+        </div>
+
+      
+      </div>
+    </div>
+
+    <ng-template #emptyUpcoming>
+      <div class="empty"><mat-icon>event_busy</mat-icon> No upcoming appointments</div>
+    </ng-template>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <!-- PAST -->
+  <section class="block">
+    <h3 class="block-title">
+      <span class="glow-dot past"></span>
+      <mat-icon>history</mat-icon> Past
+    </h3>
+
+    <div *ngIf="past().length; else emptyPast" class="grid">
+      <div class="card glass" *ngFor="let a of past()">
+        <div class="head">
+          <img class="avatar" [src]="a.doctor.avatar" alt="">
+          <div class="info">
+            <div class="name">{{ a.doctor.name }}</div>
+            <div class="meta">
+              <span class="dept">{{ a.doctor.department }}</span>
+              <span class="dot">•</span>
+              <span class="when">{{ toLocal(a.startUtc) }}</span>
+            </div>
+          </div>
+          <div class="price">
+            <div class="val">{{ a.price.value }} {{ a.price.currency }}</div>
+            <div class="muted">per {{ a.modality }}</div>
+          </div>
+        </div>
+
+        <div class="tags">
+          <span class="pill status" [ngClass]="statusClass(a)">{{ a.status }}</span>
+          <span class="pill modality" [ngClass]="a.modality">{{ a.modality }}</span>
+        </div>
+
+        <div class="row-actions">
+          <button mat-stroked-button (click)="addToCalendar(a)" matTooltip="Save to your calendar">
+            <mat-icon>event</mat-icon> Save event
+          </button>
+          <button mat-stroked-button matTooltip="Book again with this doctor" [routerLink]="['/patient/booking', a.doctorId]">
+            <mat-icon>refresh</mat-icon> Book again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #emptyPast>
+      <div class="empty"><mat-icon>hourglass_empty</mat-icon> No past appointments</div>
+    </ng-template>
+  </section>
+</div>

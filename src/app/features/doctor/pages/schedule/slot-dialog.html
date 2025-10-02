@@ -1,0 +1,49 @@
+<h2 mat-dialog-title>
+  <mat-icon>schedule</mat-icon>
+  {{ data.slot ? 'Edit slot' : 'Add slot' }}
+</h2>
+
+<mat-dialog-content class="content">
+  <!-- Use a form group so we can bind with formControlName -->
+  <form [formGroup]="form" class="content">
+    <div class="row">
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Start time</mat-label>
+        <input matInput type="time" formControlName="start" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field">
+        <mat-label>Duration (min)</mat-label>
+        <input matInput type="number" min="5" max="180" formControlName="duration" />
+      </mat-form-field>
+    </div>
+
+    <div class="mods">
+      <label>Available modalities</label>
+      <div class="checks">
+        <mat-checkbox formControlName="chat">
+          <mat-icon class="chip chat">chat</mat-icon> Chat
+        </mat-checkbox>
+        <mat-checkbox formControlName="voice">
+          <mat-icon class="chip voice">call</mat-icon> Voice
+        </mat-checkbox>
+        <mat-checkbox formControlName="video">
+          <mat-icon class="chip video">videocam</mat-icon> Video
+        </mat-checkbox>
+      </div>
+      <div class="form-hint" *ngIf="noModSelected">Select at least one modality.</div>
+      <div class="form-hint warn" *ngIf="form.hasError('overlap')">This time overlaps an existing slot.</div>
+    </div>
+
+    <mat-form-field appearance="outline" class="field full">
+      <mat-label>Notes (optional)</mat-label>
+      <textarea matInput rows="3" formControlName="notes"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-button color="warn" *ngIf="data.slot" (click)="remove()">Delete</button>
+  <button mat-flat-button color="primary" (click)="save()">Save</button>
+</mat-dialog-actions>

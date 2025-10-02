@@ -1,0 +1,143 @@
+<div class="doc-appts">
+
+  <!-- Toolbar / filters -->
+  <div class="toolbar card">
+    <div class="tabs">
+      <button class="chip" [class.active]="tab()==='today'" (click)="tab.set('today')">
+        <mat-icon>today</mat-icon> Today
+      </button>
+      <button class="chip" [class.active]="tab()==='upcoming'" (click)="tab.set('upcoming')">
+        <mat-icon>schedule</mat-icon> Upcoming
+      </button>
+      <button class="chip" [class.active]="tab()==='past'" (click)="tab.set('past')">
+        <mat-icon>history</mat-icon> Past
+      </button>
+      <button class="chip" [class.active]="tab()==='all'" (click)="tab.set('all')">
+        <mat-icon>all_inclusive</mat-icon> All
+      </button>
+    </div>
+
+    <div class="filters">
+      <div class="field">
+        <mat-icon class="pre">search</mat-icon>
+        <input matInput placeholder="Search patient or reason..." [ngModel]="q()" (ngModelChange)="q.set($event)" />
+      </div>
+
+      <div class="field pill">
+        <mat-icon>smart_toy</mat-icon>
+        <select [ngModel]="modality()" (ngModelChange)="modality.set($event)">
+          <option value="any">Any modality</option>
+          <option value="chat">Chat</option>
+          <option value="voice">Voice</option>
+          <option value="video">Video</option>
+        </select>
+      </div>
+
+      <div class="field pill">
+        <mat-icon>flag</mat-icon>
+        <select [ngModel]="status()" (ngModelChange)="status.set($event)">
+          <option value="any">Any status</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="checked_in">Checked-in</option>
+          <option value="in_progress">In progress</option>
+          <option value="completed">Completed</option>
+          <option value="canceled">Canceled</option>
+          <option value="no_show">No show</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- List -->
+  <div class="grid">
+    <div class="card row" *ngFor="let a of filtered()">
+      <div class="left">
+        <img class="avatar" [src]="a.patient.avatar" alt="" />
+        <div class="who">
+          <div class="name">{{ a.patient.name }}</div>
+          <div class="sub">
+            <span class="pill mod" [ngClass]="tagColor(a.modality)">{{ a.modality }}</span>
+            <span class="dot">•</span>
+            <span>{{ a.patient.age }} • {{ a.patient.gender }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mid">
+        <div class="time">{{ toLocal(a.startUtc) }}</div>
+        <div class="meta">
+          <span>Duration: {{ a.durationMin }}m</span>
+          <span class="dot">•</span>
+          <span class="reason" *ngIf="a.reason">{{ a.reason }}</span>
+        </div>
+      </div>
+
+      <div class="right">
+        <span class="status" [ngClass]="statusClass(a)">{{ a.status.replace('_',' ') }}</span>
+
+        <div class="actions">
+          <button mat-stroked-button *ngIf="a.status==='scheduled' || a.status==='checked_in'" (click)="mark(a,'checked_in')" matTooltip="Mark as arrived">
+            <mat-icon>assignment_turned_in</mat-icon> Check-in
+          </button>
+
+          <button mat-flat-button color="primary" [disabled]="!canJoin(a)" (click)="join(a)">
+            <mat-icon>play_circle</mat-icon> Start
+          </button>
+
+          <button mat-stroked-button *ngIf="a.status==='in_progress'" (click)="mark(a,'completed')">
+            <mat-icon>check</mat-icon> Complete
+          </button>
+
+          <button mat-stroked-button class="warn" *ngIf="a.status==='scheduled' || a.status==='checked_in'" (click)="mark(a,'canceled')">
+            <mat-icon>close</mat-icon> Cancel
+          </button>
+
+          <button mat-stroked-button class="mute" *ngIf="a.status==='scheduled'" (click)="mark(a,'no_show')">
+            <mat-icon>visibility_off</mat-icon> No-show
+          </button>
+        </div>
+
+        <div class="count" *ngIf="a.status==='scheduled'">{{ countdown(a) }}</div>
+      </div>
+
+      <!-- expandable details -->
+      <mat-expansion-panel class="details">
+        <mat-expansion-panel-header>
+          <mat-panel-title> Details & Notes </mat-panel-title>
+          <mat-panel-description> Add your clinical notes for this visit </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="detail-grid">
+          <div class="block">
+            <div class="label">Patient</div>
+            <div class="value">{{ a.patient.name }} — {{ a.patient.age }}y, {{ a.patient.gender }}</div>
+          </div>
+          <div class="block">
+            <div class="label">Window</div>
+            <div class="value">{{ toLocal(a.startUtc) }} → {{ toLocal(a.endUtc) }}</div>
+          </div>
+          <div class="block" *ngIf="a.notesForDoctor">
+            <div class="label">Patient notes</div>
+            <div class="value">{{ a.notesForDoctor }}</div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <mat-icon>note_alt</mat-icon>
+          <textarea
+            [(ngModel)]="a.notesByDoctor"
+            rows="3"
+            placeholder="Add your notes, diagnosis, plan…"></textarea>
+          <button mat-stroked-button (click)="saveDoctorNote(a, a.notesByDoctor || '')">
+            <mat-icon>save</mat-icon> Save notes
+          </button>
+        </div>
+      </mat-expansion-panel>
+    </div>
+
+    <div class="empty" *ngIf="!filtered().length">
+      <mat-icon>event_busy</mat-icon>
+      <div>No appointments match your filters.</div>
+    </div>
+  </div>
+</div>

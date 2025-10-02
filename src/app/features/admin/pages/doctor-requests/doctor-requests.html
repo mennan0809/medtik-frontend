@@ -1,0 +1,90 @@
+<h2 class="title">Doctor Requests (Profile Changes)</h2>
+
+<div class="toolbar">
+  <mat-form-field appearance="outline" class="grow">
+    <mat-label>Search</mat-label>
+    <input matInput [formControl]="search" placeholder="Doctor, field, value, status, phone, email" />
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w">
+    <mat-label>Sort by</mat-label>
+    <mat-select [formControl]="sortBy">
+      <mat-option value="submitted">Submitted</mat-option>
+      <mat-option value="doctor">Doctor</mat-option>
+      <mat-option value="status">Status</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w">
+    <mat-label>Order</mat-label>
+    <mat-select [formControl]="sortDir">
+      <mat-option value="desc">Desc</mat-option>
+      <mat-option value="asc">Asc</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<section class="grid">
+  <mat-card class="req-card" *ngFor="let r of page()">
+    <div class="head">
+      <div class="id">{{ r.id }}</div>
+      <mat-chip-set class="status">
+        <mat-chip [color]="r.status==='Approved' ? 'primary' : (r.status==='Pending' ? 'accent' : 'warn')">
+          {{ r.status }}
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+
+    <div class="who">
+      <div class="name">{{ r.doctorName }}</div>
+    </div>
+
+    <div class="meta">
+      <div class="row"><mat-icon>mail</mat-icon><a class="link" [href]="'mailto:'+r.email">{{ r.email }}</a></div>
+      <div class="row"><mat-icon>call</mat-icon><a class="link" [href]="'tel:'+r.phone">{{ r.phone }}</a></div>
+      <div class="row"><mat-icon>event</mat-icon><span class="muted">{{ r.submitted | date:'MMM d, y • h:mm a' }}</span></div>
+    </div>
+
+    <!-- Changes -->
+    <div class="changes">
+      <div class="chg" *ngFor="let c of r.changes">
+        <div class="field"><mat-icon class="chg-icon">tune</mat-icon><span class="label">{{ c.field }}</span></div>
+        <div class="fromto">
+          <span class="from">{{ c.from ?? '—' }}</span>
+          <mat-icon class="arrow">arrow_forward</mat-icon>
+          <span class="to">{{ c.to ?? '—' }}</span>
+          <a *ngIf="c.attachmentUrl" class="attach" [href]="c.attachmentUrl" target="_blank" rel="noopener">
+            <mat-icon>attach_file</mat-icon> Attachment
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="note" *ngIf="r.note">
+      <mat-icon>notes</mat-icon><span>{{ r.note }}</span>
+    </div>
+
+    <div class="actions">
+      <button mat-stroked-button color="primary" (click)="accept(r)" *ngIf="r.status!=='Approved'">
+        <mat-icon>check</mat-icon> Accept
+      </button>
+      <button mat-stroked-button color="warn" (click)="reject(r)" *ngIf="r.status!=='Rejected'">
+        <mat-icon>close</mat-icon> Reject
+      </button>
+      <span class="grow"></span>
+      <button mat-stroked-button (click)="delete(r)">
+        <mat-icon>delete</mat-icon> Delete
+      </button>
+    </div>
+  </mat-card>
+</section>
+
+<mat-paginator
+  class="pager"
+  [length]="sorted().length"
+  [pageIndex]="pageIndex()"
+  [pageSize]="pageSize()"
+  [pageSizeOptions]="[8,12,16]"
+  (page)="pageChange($event)">
+</mat-paginator>

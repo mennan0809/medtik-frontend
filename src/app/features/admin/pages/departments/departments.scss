@@ -1,0 +1,96 @@
+.title { margin: 0 0 .8rem; }
+
+/* Top toolbar */
+.toolbar { display:flex; gap:.6rem; align-items:center; margin-bottom:.8rem; }
+.grow { flex:1 1 auto; }
+.w { width: 200px; min-width: 180px; }
+
+/* Glass card base */
+.glass-card {
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)),
+    rgba(16,24,40,.55);
+  backdrop-filter: blur(12px) saturate(120%);
+}
+
+/* Add department form */
+.add-card { padding: .9rem; margin-bottom: 1rem; }
+.add-grid {
+  display: grid; gap: .8rem;
+  grid-template-columns: 1fr 1fr auto;
+}
+@media (max-width: 880px){
+  .add-grid { grid-template-columns: 1fr; }
+}
+
+/* Accordion panels */
+.dept-accordion { display:block; }
+.glass-panel {
+  border-radius: 16px !important;
+  margin-bottom: .75rem;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)),
+    rgba(16,24,40,.55);
+  backdrop-filter: blur(10px) saturate(120%);
+}
+
+/* Header content */
+.dep-header{
+  width: 100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.6rem;
+}
+.dep-title { display:flex; align-items:center; gap:.5rem; }
+.dep-icon{ font-size:20px; width:20px; height:20px; opacity:.9; }
+.dep-title .name { font-weight:800; font-size:1.05rem; }
+.dep-title .desc { opacity:.85; }
+.meta { display:flex; align-items:center; gap:.5rem; }
+.count-chip {
+  --mdc-chip-container-height: 28px;
+  --mdc-chip-label-text-size: .85rem;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+/* Doctors grid */
+.docs-grid{
+  display:grid;
+  gap: .85rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  padding: .8rem;
+}
+
+.doc-card{
+  @extend .glass-card;
+  padding: .8rem;
+}
+
+.doc-row{
+  display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+  margin-bottom: .4rem;
+}
+.doc-name{ font-weight:800; letter-spacing:.2px; }
+
+.doc-meta{ display:grid; gap:.35rem; margin:.4rem 0 .3rem; }
+.row{ display:flex; align-items:center; gap:.45rem; }
+.row mat-icon{ font-size:18px; width:18px; height:18px; opacity:.85; }
+.link{ color: var(--text); text-decoration:none; }
+.link:hover{ text-decoration:underline; }
+.muted{ opacity:.85; }
+
+.doc-actions{
+  display:flex; align-items:center; justify-content:flex-end; gap:.5rem;
+}
+
+/* Empty state */
+.empty{
+  display:flex; align-items:center; gap:.45rem; padding:.8rem 1rem;
+  opacity:.9;
+}
+.empty mat-icon{ font-size:18px; width:18px; height:18px; }

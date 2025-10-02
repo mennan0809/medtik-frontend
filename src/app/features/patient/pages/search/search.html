@@ -1,0 +1,177 @@
+<form class="search-shell" [formGroup]="form" (submit)="$event.preventDefault()">
+  <!-- HERO TOOLBAR -->
+  <header class="toolbar hero card">
+    <mat-form-field appearance="outline" class="field-glass field-hero w-100">
+      <mat-label>Search doctors or departments</mat-label>
+      <input matInput formControlName="q" placeholder="e.g., cardiology, Sarah Ali" />
+      <button mat-icon-button matSuffix type="button" (click)="openFilters()" aria-label="Filters">
+        <mat-icon>tune</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div class="toolbar-right">
+      <mat-form-field appearance="outline" class="field-glass field-hero">
+        <mat-label>Sort by</mat-label>
+        <mat-select [value]="sort()" (valueChange)="onSortChange($event)">
+          <mat-option [value]="'relevance'">Relevance</mat-option>
+          <mat-option [value]="'rating'">Rating</mat-option>
+          <mat-option [value]="'price'">Price</mat-option>
+          <mat-option [value]="'soonest'">Earliest slot</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button color="primary" class="btn-filters" type="button" (click)="openFilters()">
+        <mat-icon>tune</mat-icon>
+        Filters
+      </button>
+    </div>
+  </header>
+
+  <!-- RESULTS GRID -->
+  <section class="cards-grid">
+    <!-- loading -->
+    <ng-container *ngIf="loading(); else loaded">
+      <div class="card skeleton" *ngFor="let x of [1,2,3,4,5,6]"></div>
+    </ng-container>
+
+    <!-- loaded -->
+    <ng-template #loaded>
+      <div class="empty card" *ngIf="result().length === 0">
+        <mat-icon class="icon">search</mat-icon>
+        <div class="title">No results</div>
+        <div class="sub">Try a different keyword or adjust your filters.</div>
+        <button mat-stroked-button color="primary" type="button" (click)="clearFilters()">Clear filters</button>
+      </div>
+
+      <article
+        class="doc-card card"
+        *ngFor="let d of result()"
+        [style.--accent]="deptAccent(d.department)"
+      >
+        <!-- header -->
+        <header class="doc-head">
+          <img class="avatar-lg" [src]="d.avatar" alt="" />
+          <div class="titles">
+            <h3>{{ d.name }}</h3>
+            <!-- specialty only (no duplicate department) -->
+            <div class="subtitle">{{ d.title }}</div>
+          </div>
+          <span class="status" [class.online]="d.online">
+            <span class="dot"></span>{{ d.online ? 'Online' : 'Offline' }}
+          </span>
+        </header>
+
+        <!-- meta -->
+        <div class="meta">
+          <span class="rating">
+            <mat-icon>star</mat-icon>{{ d.rating | number:'1.1-1' }}
+            <span class="muted">({{ d.ratingCount }})</span>
+          </span>
+
+          <span class="badge badge--dept">
+            <span class="dot"></span>{{ d.department }}
+          </span>
+
+          <span class="chip">{{ d.languages.join(' · ') }}</span>
+
+          <!-- availability (single calc, then class + icon + label) -->
+          <ng-container *ngIf="availabilityInfo(d.nextAvailable) as ai">
+            <span class="next" [ngClass]="ai.cls">
+              <ng-container [ngSwitch]="ai.cls">
+                <mat-icon *ngSwitchCase="'now'">flash_on</mat-icon>
+                <mat-icon *ngSwitchCase="'soon'">schedule</mat-icon>
+                <mat-icon *ngSwitchCase="'today'">schedule</mat-icon>
+                <mat-icon *ngSwitchCase="'later'">event</mat-icon>
+                <mat-icon *ngSwitchDefault>event_busy</mat-icon>
+              </ng-container>
+              {{ ai.label }}
+            </span>
+          </ng-container>
+        </div>
+
+        <!-- prices -->
+        <div class="price-tiles">
+          <div class="tile">
+            <mat-icon>chat</mat-icon>
+            <div class="label">Chat</div>
+            <div class="value">{{ d.price.chat }} {{ d.price.currency }}</div>
+          </div>
+          <div class="tile">
+            <mat-icon>call</mat-icon>
+            <div class="label">Voice</div>
+            <div class="value">{{ d.price.voice }} {{ d.price.currency }}</div>
+          </div>
+          <div class="tile">
+            <mat-icon>videocam</mat-icon>
+            <div class="label">Video</div>
+            <div class="value">{{ d.price.video }} {{ d.price.currency }}</div>
+          </div>
+        </div>
+
+        <!-- actions -->
+        <footer class="actions">
+          <a mat-stroked-button color="primary" [routerLink]="['/patient/doctor', d.id]">
+            <mat-icon>open_in_new</mat-icon> Profile
+          </a>
+          <a mat-flat-button color="primary" [routerLink]="['/patient/booking', d.id]">Book</a>
+        </footer>
+      </article>
+    </ng-template>
+  </section>
+
+  <!-- FILTERS PANEL -->
+  <div class="filters-overlay" [class.open]="filtersOpen()" (click)="closeFilters()"></div>
+  <aside class="filters" [class.open]="filtersOpen()">
+    <header>
+      <h3>Filters</h3>
+      <button mat-icon-button type="button" (click)="closeFilters()" aria-label="Close filters">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <div class="body">
+      <mat-form-field appearance="outline" class="field-glass field-compact w-100">
+        <mat-label>Department</mat-label>
+        <mat-select formControlName="department">
+          <mat-option value="">Any</mat-option>
+          <mat-option value="Cardiology">Cardiology</mat-option>
+          <mat-option value="Dermatology">Dermatology</mat-option>
+          <mat-option value="Pediatrics">Pediatrics</mat-option>
+          <mat-option value="Psychiatry">Psychiatry</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-glass field-compact w-100">
+        <mat-label>Modality</mat-label>
+        <mat-select formControlName="modality">
+          <mat-option value="">Any</mat-option>
+          <mat-option value="chat">Chat</mat-option>
+          <mat-option value="voice">Voice</mat-option>
+          <mat-option value="video">Video</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-glass field-compact w-100">
+        <mat-label>Max price</mat-label>
+        <input matInput type="number" formControlName="maxPrice" placeholder="0 = no limit" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="field-glass field-compact w-100">
+        <mat-label>Minimum rating</mat-label>
+        <mat-select formControlName="minRating">
+          <mat-option [value]="0">Any</mat-option>
+          <mat-option [value]="4">4+</mat-option>
+          <mat-option [value]="4.5">4.5+</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="availableToday">Available today</mat-slide-toggle>
+      <mat-slide-toggle formControlName="onlineNow">Online now</mat-slide-toggle>
+    </div>
+
+    <footer>
+      <button mat-stroked-button type="button" (click)="clearFilters()">Clear</button>
+      <button mat-flat-button color="primary" type="button" (click)="closeFilters()">Apply</button>
+    </footer>
+  </aside>
+</form>

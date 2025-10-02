@@ -1,0 +1,69 @@
+<div class="reviews-wrap">
+  <!-- Header / Search -->
+  <div class="toolbar">
+    <div class="title">
+      <mat-icon>reviews</mat-icon>
+      <h2>My Reviews</h2>
+    </div>
+
+    <mat-form-field appearance="outline" class="search">
+      <mat-label>Search reviews</mat-label>
+      <input
+        matInput
+        placeholder="Doctor name, comment…"
+        [value]="query()"
+        (input)="query.set($any($event.target).value)" />
+    </mat-form-field>
+  </div>
+
+  <!-- Summary -->
+  <section class="card summary" *ngIf="count() as c">
+    <div class="left">
+      <div class="avg">{{ avg() | number:'1.1-1' }}</div>
+      <div class="stars">
+        <mat-icon *ngFor="let s of stars" [class.active]="s <= roundedAvg()">star</mat-icon>
+      </div>
+      <div class="muted">{{ c }} review{{ c>1 ? 's' : '' }}</div>
+    </div>
+
+    <div class="dist">
+      <div class="row" *ngFor="let s of stars.slice().reverse()">
+        <span class="label">{{ s }}★</span>
+        <div class="bar">
+          <span [style.width.%]="distPercent(s)"></span>
+        </div>
+        <span class="pct">{{ distPercent(s) }}%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Empty state -->
+  <div class="empty" *ngIf="!filtered().length">
+    <mat-icon>inbox</mat-icon>
+    <div>No reviews found</div>
+  </div>
+
+  <!-- Reviews list -->
+  <div class="list" *ngIf="filtered().length">
+    <article class="card item" *ngFor="let r of filtered()">
+      <div class="head">
+        <img class="avatar" [src]="r.doctorAvatar" alt="" />
+        <div class="who">
+          <div class="name">{{ r.doctorName }}</div>
+          <div class="meta">
+            <span class="stars">
+              <mat-icon *ngFor="let s of stars" [class.active]="s <= r.rating">star</mat-icon>
+            </span>
+            <span class="dot">•</span>
+            <span class="date">{{ dateLabel(r.createdAt) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="title" *ngIf="r.title">{{ r.title }}</div>
+        <p class="comment">{{ r.comment }}</p>
+      </div>
+    </article>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+/* Simple chips/tags (use when you don't need MatChips) */
+.chip {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .35rem .5rem; border-radius: var(--radius-pill);
+  background: var(--surface-2); color: var(--text); border: 1px solid var(--border);
+  font-size: var(--fs-sm);
+}
+.chip--ghost { background: transparent; }
+.chip--brand { background: rgba(42,118,183,.15); border-color: rgba(42,118,183,.35); color: #cfe7ff; }

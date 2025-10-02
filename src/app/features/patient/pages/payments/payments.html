@@ -1,0 +1,155 @@
+<div class="pay-wrap">
+  <!-- Header -->
+  <div class="toolbar">
+    <div class="title">
+      <mat-icon>receipt_long</mat-icon>
+      <h2>Payments & Invoices</h2>
+      <span class="muted">({{ unpaidCount() }} unpaid)</span>
+    </div>
+
+    <mat-button-toggle-group
+      class="filters"
+      [value]="status()"
+      (change)="setFilter($event.value)"
+      aria-label="Filter invoices"
+    >
+      <mat-button-toggle value="all"><mat-icon>all_inclusive</mat-icon> All</mat-button-toggle>
+      <mat-button-toggle value="unpaid"><mat-icon>warning</mat-icon> Unpaid</mat-button-toggle>
+      <mat-button-toggle value="paid"><mat-icon>check_circle</mat-icon> Paid</mat-button-toggle>
+      <mat-button-toggle value="refunded"><mat-icon>redeem</mat-icon> Refunded</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Content -->
+  <ng-container *ngIf="status() !== 'all'; else grouped">
+    <div class="grid">
+      <section class="inv-card" *ngFor="let i of filtered()">
+        <div class="left">
+          <img class="avatar" [src]="i.doctor.avatar" alt="" />
+          <div class="meta">
+            <div class="doc">
+              <div class="name">{{ i.doctor.name }}</div>
+              <div class="dept muted">{{ i.doctor.department }}</div>
+            </div>
+            <div class="when muted">{{ toLocal(i.createdAt) }}</div>
+          </div>
+        </div>
+
+        <div class="right">
+          <div class="amount">
+            <div class="val">{{ i.amount.value }} {{ i.amount.currency }}</div>
+            <div class="pill modality" [ngClass]="i.modality"><mat-icon>{{ modalityIcon(i.modality) }}</mat-icon>{{ i.modality }}</div>
+          </div>
+
+          <div class="actions">
+            <button mat-flat-button color="primary" *ngIf="i.status==='unpaid'" (click)="payNow(i)">
+              <mat-icon>payments</mat-icon> Pay now
+            </button>
+            <button mat-stroked-button (click)="downloadReceipt(i)">
+              <mat-icon>download</mat-icon> Receipt
+            </button>
+            <button mat-button (click)="viewAppointment(i)">
+              <mat-icon>event</mat-icon> Appointment
+            </button>
+          </div>
+
+          <div class="status chip" [ngClass]="i.status">{{ i.status }}</div>
+        </div>
+      </section>
+    </div>
+  </ng-container>
+
+  <!-- Grouped (All) -->
+  <ng-template #grouped>
+    <div class="section" *ngIf="unpaid().length">
+      <h3><mat-icon>warning</mat-icon> Unpaid</h3>
+      <div class="grid">
+        <section class="inv-card" *ngFor="let i of unpaid()">
+          <div class="left">
+            <img class="avatar" [src]="i.doctor.avatar" alt="" />
+            <div class="meta">
+              <div class="doc">
+                <div class="name">{{ i.doctor.name }}</div>
+                <div class="dept muted">{{ i.doctor.department }}</div>
+              </div>
+              <div class="when muted">{{ toLocal(i.createdAt) }}</div>
+            </div>
+          </div>
+
+          <div class="right">
+            <div class="amount">
+              <div class="val">{{ i.amount.value }} {{ i.amount.currency }}</div>
+              <div class="pill modality" [ngClass]="i.modality"><mat-icon>{{ modalityIcon(i.modality) }}</mat-icon>{{ i.modality }}</div>
+            </div>
+            <div class="actions">
+              <button mat-flat-button color="primary" (click)="payNow(i)"><mat-icon>payments</mat-icon> Pay now</button>
+              <button mat-stroked-button (click)="downloadReceipt(i)"><mat-icon>download</mat-icon> Receipt</button>
+              <button mat-button (click)="viewAppointment(i)"><mat-icon>event</mat-icon> Appointment</button>
+            </div>
+            <div class="status chip unpaid">unpaid</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="section" *ngIf="paid().length">
+      <h3><mat-icon>check_circle</mat-icon> Paid</h3>
+      <div class="grid">
+        <section class="inv-card" *ngFor="let i of paid()">
+          <div class="left">
+            <img class="avatar" [src]="i.doctor.avatar" alt="" />
+            <div class="meta">
+              <div class="doc">
+                <div class="name">{{ i.doctor.name }}</div>
+                <div class="dept muted">{{ i.doctor.department }}</div>
+              </div>
+              <div class="when muted">{{ toLocal(i.createdAt) }}</div>
+            </div>
+          </div>
+
+          <div class="right">
+            <div class="amount">
+              <div class="val">{{ i.amount.value }} {{ i.amount.currency }}</div>
+              <div class="pill modality" [ngClass]="i.modality"><mat-icon>{{ modalityIcon(i.modality) }}</mat-icon>{{ i.modality }}</div>
+            </div>
+            <div class="actions">
+              <button mat-stroked-button (click)="downloadReceipt(i)"><mat-icon>download</mat-icon> Receipt</button>
+              <button mat-button (click)="viewAppointment(i)"><mat-icon>event</mat-icon> Appointment</button>
+            </div>
+            <div class="status chip paid">paid</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="section" *ngIf="refunded().length">
+      <h3><mat-icon>redeem</mat-icon> Refunded</h3>
+      <div class="grid">
+        <section class="inv-card" *ngFor="let i of refunded()">
+          <div class="left">
+            <img class="avatar" [src]="i.doctor.avatar" alt="" />
+            <div class="meta">
+              <div class="doc">
+                <div class="name">{{ i.doctor.name }}</div>
+                <div class="dept muted">{{ i.doctor.department }}</div>
+              </div>
+              <div class="when muted">{{ toLocal(i.createdAt) }}</div>
+            </div>
+          </div>
+
+          <div class="right">
+            <div class="amount">
+              <div class="val">{{ i.amount.value }} {{ i.amount.currency }}</div>
+              <div class="pill modality" [ngClass]="i.modality"><mat-icon>{{ modalityIcon(i.modality) }}</mat-icon>{{ i.modality }}</div>
+            </div>
+            <div class="actions">
+              <button mat-stroked-button (click)="downloadReceipt(i)"><mat-icon>download</mat-icon> Receipt</button>
+              <button mat-button (click)="viewAppointment(i)"><mat-icon>event</mat-icon> Appointment</button>
+            </div>
+            <div class="status chip refunded">refunded</div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </ng-template>
+</div>

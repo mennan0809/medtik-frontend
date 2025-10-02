@@ -1,0 +1,181 @@
+<div class="notif-wrap">
+  <!-- Header -->
+  <div class="toolbar">
+    <div class="title">
+      <mat-icon>notifications_active</mat-icon>
+      <h2>Notifications</h2>
+    </div>
+
+    <div class="tools">
+      <div class="search">
+        <input
+          type="text"
+          [value]="query()"
+          (input)="query.set($any($event.target).value)"
+          placeholder="Search notifications…" />
+        <mat-icon>search</mat-icon>
+      </div>
+
+      <button mat-stroked-button (click)="markAllRead()" matTooltip="Mark all as read">
+        <mat-icon>done_all</mat-icon> Mark all read
+      </button>
+      <button mat-stroked-button (click)="clearOlderThan(30)" matTooltip="Archive items older than 30 days">
+        <mat-icon>cleaning_services</mat-icon> Clear 30d
+      </button>
+      <button mat-flat-button color="primary" (click)="openSettings()">
+        <mat-icon>tune</mat-icon> Settings
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters card">
+    <mat-button-toggle-group [value]="filter()" (change)="filter.set($event.value)">
+      <mat-button-toggle value="all">
+        <mat-icon>all_inclusive</mat-icon>
+        All
+        <span class="badge" *ngIf="counts().all">{{ counts().all }}</span>
+      </mat-button-toggle>
+      <mat-button-toggle value="appointment">
+        <mat-icon>event_available</mat-icon>
+        Appointments
+        <span class="badge" *ngIf="counts().appointment">{{ counts().appointment }}</span>
+      </mat-button-toggle>
+      <mat-button-toggle value="message">
+        <mat-icon>chat</mat-icon>
+        Messages
+        <span class="badge" *ngIf="counts().message">{{ counts().message }}</span>
+      </mat-button-toggle>
+      <mat-button-toggle value="payment">
+        <mat-icon>receipt_long</mat-icon>
+        Payments
+        <span class="badge" *ngIf="counts().payment">{{ counts().payment }}</span>
+      </mat-button-toggle>
+      <mat-button-toggle value="record">
+        <mat-icon>folder_shared</mat-icon>
+        Records
+        <span class="badge" *ngIf="counts().record">{{ counts().record }}</span>
+      </mat-button-toggle>
+      <mat-button-toggle value="system">
+        <mat-icon>notifications</mat-icon>
+        System
+        <span class="badge" *ngIf="counts().system">{{ counts().system }}</span>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Groups -->
+  <div class="group" *ngIf="groups().today.length">
+    <div class="head">Today</div>
+    <div class="list">
+      <div class="item" *ngFor="let n of groups().today" [class.unread]="n.status==='unread'">
+        <div class="icon" [ngClass]="n.kind"><mat-icon>{{ icon(n.kind) }}</mat-icon></div>
+
+        <div class="content" (click)="open(n)">
+          <div class="row1">
+            <div class="title">{{ n.title }}</div>
+            <span class="pill" *ngIf="n.pill">{{ n.pill }}</span>
+          </div>
+          <div class="row2" *ngIf="n.body">{{ n.body }}</div>
+          <div class="meta">
+            <span class="kind" [ngClass]="n.kind">{{ n.kind }}</span>
+            <span class="dot">•</span>
+            <span class="ts">{{ when(n) }}</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button mat-stroked-button *ngIf="n.cta" (click)="open(n)">{{ n.cta.label }}</button>
+          <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More">
+            <mat-icon>more_horiz</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="toggleRead(n)">
+              <mat-icon>{{ n.status==='unread' ? 'mark_email_read' : 'mark_email_unread' }}</mat-icon>
+              <span>{{ n.status==='unread' ? 'Mark read' : 'Mark unread' }}</span>
+            </button>
+            <button mat-menu-item (click)="archive(n)"><mat-icon>archive</mat-icon><span>Archive</span></button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="group" *ngIf="groups().week.length">
+    <div class="head">This week</div>
+    <div class="list">
+      <div class="item" *ngFor="let n of groups().week" [class.unread]="n.status==='unread'">
+        <div class="icon" [ngClass]="n.kind"><mat-icon>{{ icon(n.kind) }}</mat-icon></div>
+
+        <div class="content" (click)="open(n)">
+          <div class="row1">
+            <div class="title">{{ n.title }}</div>
+            <span class="pill" *ngIf="n.pill">{{ n.pill }}</span>
+          </div>
+          <div class="row2" *ngIf="n.body">{{ n.body }}</div>
+          <div class="meta">
+            <span class="kind" [ngClass]="n.kind">{{ n.kind }}</span>
+            <span class="dot">•</span>
+            <span class="ts">{{ when(n) }}</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button mat-stroked-button *ngIf="n.cta" (click)="open(n)">{{ n.cta.label }}</button>
+          <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More">
+            <mat-icon>more_horiz</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="toggleRead(n)">
+              <mat-icon>{{ n.status==='unread' ? 'mark_email_read' : 'mark_email_unread' }}</mat-icon>
+              <span>{{ n.status==='unread' ? 'Mark read' : 'Mark unread' }}</span>
+            </button>
+            <button mat-menu-item (click)="archive(n)"><mat-icon>archive</mat-icon><span>Archive</span></button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="group" *ngIf="groups().earlier.length">
+    <div class="head">Earlier</div>
+    <div class="list">
+      <div class="item" *ngFor="let n of groups().earlier" [class.unread]="n.status==='unread'">
+        <div class="icon" [ngClass]="n.kind"><mat-icon>{{ icon(n.kind) }}</mat-icon></div>
+
+        <div class="content" (click)="open(n)">
+          <div class="row1">
+            <div class="title">{{ n.title }}</div>
+            <span class="pill" *ngIf="n.pill">{{ n.pill }}</span>
+          </div>
+          <div class="row2" *ngIf="n.body">{{ n.body }}</div>
+          <div class="meta">
+            <span class="kind" [ngClass]="n.kind">{{ n.kind }}</span>
+            <span class="dot">•</span>
+            <span class="ts">{{ when(n) }}</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button mat-stroked-button *ngIf="n.cta" (click)="open(n)">{{ n.cta.label }}</button>
+          <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More">
+            <mat-icon>more_horiz</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="toggleRead(n)">
+              <mat-icon>{{ n.status==='unread' ? 'mark_email_read' : 'mark_email_unread' }}</mat-icon>
+              <span>{{ n.status==='unread' ? 'Mark read' : 'Mark unread' }}</span>
+            </button>
+            <button mat-menu-item (click)="archive(n)"><mat-icon>archive</mat-icon><span>Archive</span></button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty card" *ngIf="!groups().today.length && !groups().week.length && !groups().earlier.length">
+    <mat-icon>inbox</mat-icon>
+    <div>You're all caught up</div>
+    <div class="muted">No notifications match your filters.</div>
+  </div>
+</div>

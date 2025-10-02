@@ -1,0 +1,153 @@
+<div class="settings-wrap">
+  <!-- Header -->
+  <div class="toolbar">
+    <div class="title">
+      <span class="glowdot"></span>
+      <h2>Settings</h2>
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- Profile -->
+    <section class="card neo">
+      <header class="section-head">
+        <mat-icon>account_circle</mat-icon>
+        <h3>Profile</h3>
+      </header>
+
+      <div class="profile">
+        <div class="avatar">
+          <img [src]="avatarUrl()" alt="">
+          <label class="change" matTooltip="Change photo">
+            <input type="file" accept="image/*" (change)="onPickAvatar($event)" />
+            <mat-icon>camera_alt</mat-icon>
+          </label>
+        </div>
+
+        <form [formGroup]="profileForm" class="form">
+          <mat-form-field appearance="outline" class="field full">
+            <mat-label>Full name</mat-label>
+            <input matInput formControlName="fullName">
+            <mat-error *ngIf="profileForm.controls['fullName'].invalid && profileForm.controls['fullName'].touched">
+              Name is required (min 3 chars).
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Date of birth</mat-label>
+            <input matInput type="date" formControlName="dob">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Country</mat-label>
+            <mat-select formControlName="country">
+              <mat-option *ngFor="let c of countries" [value]="c.code">{{ c.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Language</mat-label>
+            <mat-select formControlName="language">
+              <mat-option *ngFor="let l of languages" [value]="l.code">{{ l.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field full">
+            <mat-label>Time zone</mat-label>
+            <mat-select formControlName="timezone">
+              <mat-option *ngFor="let tz of timezones" [value]="tz">{{ tz }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <div class="actions">
+            <button mat-flat-button color="primary" class="neon" (click)="saveProfile()">
+              <mat-icon>save</mat-icon> Save profile
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Change Password -->
+    <section class="card neo">
+      <header class="section-head">
+        <mat-icon>lock_reset</mat-icon>
+        <h3>Change password</h3>
+      </header>
+
+      <form [formGroup]="passwordForm" class="pwd">
+        <mat-form-field appearance="outline" class="field full">
+          <mat-label>Current password</mat-label>
+          <input matInput [type]="'password'" formControlName="oldPassword" autocomplete="current-password">
+          <mat-error *ngIf="passwordForm.controls['oldPassword'].invalid && passwordForm.controls['oldPassword'].touched">
+            Required.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>New password</mat-label>
+          <input matInput [type]="'password'" formControlName="newPassword" autocomplete="new-password">
+          <mat-error *ngIf="passwordForm.controls['newPassword'].hasError('required') && passwordForm.controls['newPassword'].touched">
+            Required.
+          </mat-error>
+          <mat-error *ngIf="passwordForm.controls['newPassword'].hasError('minlength') && passwordForm.controls['newPassword'].touched">
+            Min 8 characters.
+          </mat-error>
+          <mat-error *ngIf="passwordForm.controls['newPassword'].hasError('pattern') && passwordForm.controls['newPassword'].touched">
+            Use letters and numbers.
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="field">
+          <mat-label>Confirm new password</mat-label>
+          <input matInput [type]="'password'" formControlName="confirm" autocomplete="new-password">
+          <mat-error *ngIf="passwordForm.hasError('passwordMismatch') && passwordForm.controls['confirm'].touched">
+            Passwords don’t match.
+          </mat-error>
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-stroked-button class="neon" (click)="changePassword()">
+            <mat-icon>key</mat-icon> Update password
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Notifications (simplified) -->
+    <section class="card neo">
+      <header class="section-head">
+        <mat-icon>notifications_active</mat-icon>
+        <h3>Notifications</h3>
+      </header>
+
+      <form [formGroup]="notiForm" class="notis">
+        <div class="row">
+          <div class="group">
+            <div class="label">Channels</div>
+            <mat-slide-toggle formControlName="push">In-app push</mat-slide-toggle>
+            <mat-slide-toggle formControlName="email">Email</mat-slide-toggle>
+          </div>
+
+          <div class="group">
+            <div class="label">Topics</div>
+            <mat-slide-toggle formControlName="appt">Appointment reminders</mat-slide-toggle>
+            <mat-slide-toggle formControlName="chat">Chat & replies</mat-slide-toggle>
+            <mat-slide-toggle formControlName="marketing">Tips & promotions</mat-slide-toggle>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button mat-stroked-button class="neon" (click)="saveNotifications()">
+            <mat-icon>save</mat-icon> Save preferences
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>

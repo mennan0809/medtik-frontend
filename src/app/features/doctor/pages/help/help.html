@@ -1,0 +1,68 @@
+<div class="help-wrap container">
+  <header class="hero">
+    <div class="title">
+      <div class="glow"></div>
+      <mat-icon>headset_mic</mat-icon>
+      <h2>Help & Support</h2>
+    </div>
+    <p class="tagline">We’re here every day, 9:00–22:00 EET.</p>
+  </header>
+
+  <section class="cards">
+    <!-- Hotline -->
+    <article class="card channel">
+      <div class="icon aura"><mat-icon>call</mat-icon></div>
+      <div class="body">
+        <h3>Support Hotline</h3>
+        <div class="value">{{ hotline }}</div>
+        <div class="actions">
+          <button mat-flat-button color="primary" (click)="call(hotline)">
+            <mat-icon>call</mat-icon><span>Call</span>
+          </button>
+          <button mat-stroked-button (click)="copy(hotline)" matTooltip="Copy number">
+            <mat-icon>content_copy</mat-icon><span>Copy</span>
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- WhatsApp -->
+    <article class="card channel">
+      <div class="icon aura"><mat-icon>chat</mat-icon></div>
+      <div class="body">
+        <h3>WhatsApp</h3>
+        <div class="value">{{ whatsapp }}</div>
+        <div class="actions">
+          <button mat-flat-button color="primary" (click)="openWhatsApp(whatsapp)">
+            <mat-icon>open_in_new</mat-icon><span>Open</span>
+          </button>
+          <button mat-stroked-button (click)="copy(whatsapp)" matTooltip="Copy number">
+            <mat-icon>content_copy</mat-icon><span>Copy</span>
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Email -->
+    <article class="card channel">
+      <div class="icon aura"><mat-icon>mail</mat-icon></div>
+      <div class="body">
+        <h3>Email</h3>
+        <div class="value">{{ email }}</div>
+        <div class="actions">
+          <button mat-flat-button color="primary" (click)="emailTo(email)">
+            <mat-icon>mail</mat-icon><span>Email</span>
+          </button>
+          <button mat-stroked-button (click)="copy(email)" matTooltip="Copy email">
+            <mat-icon>content_copy</mat-icon><span>Copy</span>
+          </button>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <footer class="foot">
+    <mat-icon>verified_user</mat-icon>
+    <span>Response time typically under 10 minutes during hours.</span>
+  </footer>
+</div>

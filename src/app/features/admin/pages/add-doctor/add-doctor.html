@@ -1,0 +1,57 @@
+<h2 class="title">Add Doctor</h2>
+
+<mat-card class="glass-card">
+  <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+    <!-- Email -->
+    <mat-form-field appearance="outline">
+      <mat-label>Doctor email</mat-label>
+      <input matInput type="email" formControlName="email" autocomplete="email" />
+      <mat-icon matSuffix>mail</mat-icon>
+      <mat-error *ngIf="f.email.touched && f.email.errors?.['required']">Email is required</mat-error>
+      <mat-error *ngIf="f.email.touched && f.email.errors?.['email']">Enter a valid email</mat-error>
+    </mat-form-field>
+
+    <!-- Phone -->
+    <mat-form-field appearance="outline">
+      <mat-label>Phone number</mat-label>
+      <input matInput formControlName="phone" placeholder="+20 1xx xxx xxxx" autocomplete="tel" />
+      <mat-icon matSuffix>call</mat-icon>
+      <mat-error *ngIf="f.phone.touched && f.phone.errors?.['required']">Phone is required</mat-error>
+      <mat-error *ngIf="f.phone.touched && f.phone.errors?.['pattern']">Enter a valid phone</mat-error>
+    </mat-form-field>
+
+    <!-- Department -->
+    <mat-form-field appearance="outline">
+      <mat-label>Department</mat-label>
+      <mat-select formControlName="departmentId">
+        <mat-option *ngFor="let d of departments" [value]="d.id">{{ d.name }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="f.departmentId.touched && f.departmentId.errors?.['required']">Select a department</mat-error>
+    </mat-form-field>
+
+    <!-- Temp Password -->
+    <mat-form-field appearance="outline" class="pass-field">
+      <mat-label>Temporary password</mat-label>
+      <input matInput [type]="hidePass ? 'password' : 'text'" formControlName="tempPassword" autocomplete="new-password" />
+      <button mat-icon-button matSuffix type="button" (click)="hidePass = !hidePass" aria-label="Toggle password">
+        <mat-icon>{{ hidePass ? 'visibility' : 'visibility_off' }}</mat-icon>
+      </button>
+      <mat-error *ngIf="f.tempPassword.touched && f.tempPassword.errors?.['required']">Password is required</mat-error>
+      <mat-error *ngIf="f.tempPassword.touched && f.tempPassword.errors?.['minlength']">Min 6 characters</mat-error>
+    </mat-form-field>
+
+    <div class="actions-row">
+      <button mat-stroked-button type="button" (click)="generatePassword()">
+        <mat-icon>auto_fix_high</mat-icon> Generate
+      </button>
+
+      <mat-checkbox formControlName="sendInvite">Send invite email with credentials</mat-checkbox>
+
+      <span class="grow"></span>
+
+      <button mat-flat-button color="primary" type="submit">
+        <mat-icon>person_add</mat-icon> Create credentials
+      </button>
+    </div>
+  </form>
+</mat-card>

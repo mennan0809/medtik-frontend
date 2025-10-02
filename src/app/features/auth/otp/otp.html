@@ -1,0 +1,38 @@
+<div class="auth-shell">
+  <div class="auth-frame">
+    <main class="form-pane only-form">
+      <div class="brand">
+        <img class="brand-mark" src="https://ik.imagekit.io/a2wpi1kd9/imgToUrl/image-to-url_HEow9eLbR" alt="Medtik" />
+        <h1>Verify</h1>
+      </div>
+
+      <h2>Enter the 6-digit code</h2>
+      <p class="sub" *ngIf="displayPhone">We sent a code to <strong>{{ displayPhone }}</strong></p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline">
+          <mat-label>OTP code</mat-label>
+          <input matInput maxlength="6" formControlName="code" placeholder="••••••" />
+          <mat-error *ngIf="form.controls.code.touched && form.controls.code.errors?.['required']">
+            Code is required
+          </mat-error>
+          <mat-error *ngIf="form.controls.code.touched && form.controls.code.errors?.['pattern']">
+            Enter 6 digits
+          </mat-error>
+        </mat-form-field>
+
+        <button mat-flat-button color="primary" class="submit" type="submit">Verify</button>
+
+        <div class="aux">
+          <button type="button" mat-button (click)="resend()" [disabled]="seconds>0">
+            Resend {{ seconds>0 ? '('+seconds+'s)' : '' }}
+          </button>
+        </div>
+
+        <div class="aux">
+          <a routerLink="/auth/login">Back to sign in</a>
+        </div>
+      </form>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,89 @@
+.title { margin: 0 0 .8rem; }
+
+/* Toolbar */
+.toolbar{
+  display:flex; align-items:center; gap:.75rem;
+  margin-bottom:.8rem; flex-wrap: wrap;
+}
+.chips{ display:flex; align-items:center; }
+.search{ flex: 1 1 360px; min-width: 260px; }
+.actions{ display:flex; gap:.5rem; }
+
+/* Glass list container */
+.list.glass{
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)),
+    rgba(16,24,40,.55);
+  backdrop-filter: blur(12px) saturate(120%);
+  padding: .4rem;
+}
+
+/* Item */
+.item{
+  display:grid; grid-template-columns: 52px 1fr auto;
+  gap:.6rem; align-items:center;
+  padding: .6rem .5rem;
+  border-radius: 12px;
+}
+.item + .item{ border-top: 1px solid rgba(255,255,255,.08); }
+
+.left{ display:flex; align-items:center; justify-content:center; }
+.icon-wrap{
+  width: 36px; height: 36px; border-radius: 10px;
+  display:grid; place-items:center;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  position: relative;
+}
+.icon-wrap.unread::after{
+  content:''; position:absolute; top:-3px; right:-3px; width:10px; height:10px;
+  border-radius:50%; background:#ff7a7a; border:2px solid rgba(16,24,40,.85);
+}
+.type-icon{ opacity:.95; }
+
+/* Type icon subtle colors */
+.type-icon.system { color: #ffb74d; }
+.type-icon.requests { color: #64b5f6; }
+.type-icon.payments { color: #81c784; }
+.type-icon.users { color: #e57373; }
+
+.mid{ display:flex; flex-direction:column; gap:.2rem; }
+.row1{ display:flex; align-items:center; gap:.5rem; }
+.title-text{ font-weight:800; letter-spacing:.2px; }
+.type-chip{
+  --mdc-chip-container-height: 26px;
+  --mdc-chip-label-text-size: .8rem;
+}
+.message{ opacity:.9; }
+.meta{ display:flex; align-items:center; gap:.35rem; opacity:.85; }
+.meta mat-icon{ font-size:18px; width:18px; height:18px; opacity:.85; }
+
+.right{ display:flex; align-items:center; gap:.25rem; }
+
+/* Empty state */
+.empty{
+  display:flex; align-items:center; gap:.45rem; padding: .8rem;
+  opacity:.9; justify-content:center;
+}
+.empty mat-icon{ font-size:20px; width:20px; height:20px; }
+
+/* Paginator */
+.pager{ margin-top:.8rem; }
+
+/* Responsive */
+@media (max-width: 720px){
+  .item { grid-template-columns: 40px 1fr auto; }
+  .actions button { min-width: unset; }
+}
+/* Filter chips listbox */
+.filters {
+  display: inline-flex;
+  gap: .25rem;
+  margin-right: .5rem;
+}
+:host ::ng-deep .filters .mat-mdc-chip {
+  --mdc-chip-container-height: 28px;
+  --mdc-chip-label-text-size: .85rem;
+}

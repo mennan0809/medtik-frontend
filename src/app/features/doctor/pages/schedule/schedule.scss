@@ -1,0 +1,221 @@
+/* Page shell */
+.sched-wrap {
+  padding: 1rem;
+}
+
+/* Header */
+/* --- add this under .toolbar (or anywhere after it) --- */
+/* --- keep filters on the same row as the title/week controls --- */
+.toolbar {
+  /* make the left block shrink if needed, keep filters to the right */
+  .title {
+    flex: 1 1 auto;      /* allow it to shrink/grow */
+    min-width: 0;        /* enables shrinking without wrapping */
+    flex-wrap: nowrap;   /* force one line for the title area */
+  }
+
+  .filters {
+    margin-left: auto;   /* push filters to the far right */
+    flex: 0 0 auto;      /* don't let filters shrink into a new line */
+    white-space: nowrap; /* keep the toggles together */
+  }
+
+  /* keep week controls compact */
+  .title .week-controls {
+    flex-wrap: nowrap;
+    gap: .2rem;
+  }
+  .title .week { white-space: nowrap; }
+}
+
+/* optional: stack on very small screens */
+@media (max-width: 720px) {
+  .toolbar {
+    flex-wrap: wrap;
+    .title { flex: 1 1 100%; margin-bottom: .5rem; }
+    .filters { margin-left: 0; }
+  }
+}
+
+
+
+/* Grid of days: 3 columns desktop, 2 on tablets, 1 on phones */
+.week-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 1200px) {
+  .week-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .week-grid { grid-template-columns: 1fr; }
+}
+
+/* Day card */
+.day-card {
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  padding: .85rem;
+
+  .day-head {
+    display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+    padding-bottom: .5rem; margin-bottom: .5rem;
+    border-bottom: 1px dashed rgba(255,255,255,.06);
+
+    .name { font-weight: 700; letter-spacing: .2px; }
+    .legend { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .chip {
+      font-size: .75rem; padding: .2rem .5rem; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.04);
+      &.chat  { border-color: rgba(85,145,255,.5);  background: rgba(85,145,255,.08); }
+      &.voice { border-color: rgba(66,211,146,.5);  background: rgba(66,211,146,.08); }
+      &.video { border-color: rgba(183,140,255,.5); background: rgba(183,140,255,.08); }
+    }
+  }
+
+  .slots { display: grid; gap: .6rem; }
+
+  .slot {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: .65rem .75rem; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(255,255,255,.03);
+    cursor: pointer; transition: transform .12s ease, background .12s ease, border-color .12s ease;
+
+    .time { display: flex; align-items: center; gap: .4rem; font-weight: 600; letter-spacing: .2px; }
+    .mods { display: flex; gap: .4rem; }
+    .pill {
+      font-size: .75rem; padding: .15rem .5rem; border-radius: 999px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+      text-transform: capitalize;
+    }
+
+    &:hover { transform: translateY(-1px); background: rgba(255,255,255,.05); }
+  }
+
+  /* Color accents by modality */
+  .slot.chat  { border-left: 3px solid #5591ff; }
+  .slot.voice { border-left: 3px solid #42d392; }
+  .slot.video { border-left: 3px solid #b78cff; }
+  .slot.multi { border-left: 3px solid #9adcff; }
+
+  .empty {
+    display: flex; align-items: center; gap: .4rem;
+    padding: .65rem .75rem; border-radius: 12px;
+    border: 1px dashed rgba(255,255,255,.10); opacity: .7;
+  }
+
+  .add {
+    width: 100%; margin-top: .7rem; border-radius: 12px;
+  }
+}
+
+////////////////////////////////////
+/* keep header and filters on one row */
+/* ---------- Toolbar: keep everything on one row ---------- */
+.toolbar{
+  display: grid;
+  grid-template-columns: 1fr auto;   /* left: title+week, right: filters */
+  align-items: center;
+  gap: .75rem;
+  min-width: 0;                       /* prevent overflow */
+}
+
+/* Left side (icon + “Schedule” + week controls) */
+.toolbar .title{
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  min-width: 0;
+
+  /* push week controls up next to the title (no wrapping) */
+  .week-controls{
+    margin-left: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    white-space: nowrap;
+
+    /* prev/next arrow buttons */
+    .mat-icon-button{
+      width: 34px; height: 34px; line-height: 34px;
+    }
+    .mat-icon{ width: 18px; height: 18px; font-size: 18px; }
+
+    /* date range “pill” */
+    .week{
+      display: inline-flex;
+      align-items: center;
+      padding: .32rem .6rem;
+      border-radius: 7px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      font-weight: 600;
+      letter-spacing: .2px;
+      line-height: 1;
+    }
+
+    /* “This week” button styled to match height of the pill */
+    .this-week{
+      height: 34px;
+      line-height: 34px;
+      padding: 0 .45rem;
+      border-radius: 999px;
+    }
+  }
+}
+
+/* Right side (toggle filters) — compact so they fit on the row */
+:host ::ng-deep .filters.mat-button-toggle-group{
+  border-radius: 999px;
+  overflow: hidden;
+}
+:host ::ng-deep .filters .mat-button-toggle-button{
+  height: 32px;             /* slimmer */
+  padding: 0 .36rem;
+}
+:host ::ng-deep .filters .mat-button-toggle-label-content{
+  display: inline-flex;
+  align-items: center;
+  gap: .28rem;
+  padding: 0 .32rem;
+  font-size: .85rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+:host ::ng-deep .filters .mat-icon{
+  width: 16px; height: 16px; font-size: 16px;
+}
+
+/* If the viewport gets very narrow, keep alignment but allow graceful wrap */
+@media (max-width: 980px){
+  .toolbar{ grid-template-columns: 1fr; row-gap: .5rem; }
+  .toolbar .title{ flex-wrap: wrap; }
+  :host ::ng-deep .filters{ justify-self: start; }
+}
+/////////////////////////////
+/* ---------- FIX: labels cropped at the top ---------- */
+/* Scope deeply into Angular Material’s MDC fields */
+:host ::ng-deep .mat-mdc-form-field-infix {
+  /* give the floating label room so it doesn't get shaved */
+  padding-top: 14px !important;
+  padding-bottom: 10px !important;
+}
+
+:host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
+  /* undo the earlier tight line-height that was causing the crop */
+  line-height: normal !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+/* a little breathing room under the dialog title */
+mat-dialog-content.content .row:first-child {
+  margin-top: 8px;
+}
+
+/* (tiny typo fix from before: remove the space so it applies) */
+.mods .checks .chip { margin-right: .2rem; }
