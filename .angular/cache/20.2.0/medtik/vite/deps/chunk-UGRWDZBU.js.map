@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../node_modules/@angular/cdk/fesm2022/test-environment.mjs"],
+  "sourcesContent": ["/** Gets whether the code is currently running in a test environment. */\r\nfunction _isTestEnvironment() {\r\n    // We can't use `declare const` because it causes conflicts inside Google with the real typings\r\n    // for these symbols and we can't read them off the global object, because they don't appear to\r\n    // be attached there for some runners like Jest.\r\n    // (see: https://github.com/angular/components/issues/23365#issuecomment-938146643)\r\n    return (\r\n    // @ts-ignore\r\n    (typeof __karma__ !== 'undefined' && !!__karma__) ||\r\n        // @ts-ignore\r\n        (typeof jasmine !== 'undefined' && !!jasmine) ||\r\n        // @ts-ignore\r\n        (typeof jest !== 'undefined' && !!jest) ||\r\n        // @ts-ignore\r\n        (typeof Mocha !== 'undefined' && !!Mocha));\r\n}\r\n\r\nexport { _isTestEnvironment };\r\n\r\n"],
+  "mappings": ";AACA,SAAS,qBAAqB;AAK1B;AAAA;AAAA,IAEC,OAAO,cAAc,eAAe,CAAC,CAAC;AAAA,IAElC,OAAO,YAAY,eAAe,CAAC,CAAC;AAAA,IAEpC,OAAO,SAAS,eAAe,CAAC,CAAC;AAAA,IAEjC,OAAO,UAAU,eAAe,CAAC,CAAC;AAAA;AAC3C;",
+  "names": []
+}
