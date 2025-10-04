@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
+import { doctorProfileGuard } from './guards/doctor-profile.guard';
 
 export const DOCTOR_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
       import('./layout/doctor-layout/doctor-layout').then(m => m.DoctorLayoutComponent),
+    canActivateChild: [doctorProfileGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {

@@ -31,3 +31,16 @@
   .form-grid{ grid-template-columns: 1fr; }
   .pass-field{ grid-column: 1; }
 }
+
+.api-error{
+  grid-column: 1 / -1;
+  color: #f44336;
+  font-size: 0.85rem;
+  margin: -0.25rem 0 0.25rem;
+}
+
+.form-grid.busy{
+  opacity: 0.75;
+  pointer-events: none;
+}
+

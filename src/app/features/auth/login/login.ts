@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService, LoginRequest } from '../services/auth.service';
+import { DoctorProfileService } from '../../doctor/services/doctor-profile.service';
 import {
   animate,
   query,
@@ -53,6 +54,7 @@ export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   private readonly auth = inject(AuthService);
+  private readonly doctorProfile = inject(DoctorProfileService, { optional: true });
 
   hide = true;
   loading = false;
@@ -81,6 +83,15 @@ export class LoginComponent {
       next: result => {
         this.loading = false;
         const target = this.routeForRole(result.role);
+
+        if (result.role === 'DOCTOR' && this.doctorProfile) {
+          this.doctorProfile.refreshProfile().subscribe({
+            next: () => this.router.navigateByUrl(target),
+            error: () => this.router.navigateByUrl(target),
+          });
+          return;
+        }
+
         this.router.navigateByUrl(target);
       },
       error: err => {

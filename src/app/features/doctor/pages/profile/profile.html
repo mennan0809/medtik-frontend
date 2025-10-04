@@ -1,218 +1,271 @@
-<div class="profile-shell">
-  <!-- LEFT: Form -->
-  <section class="panel form-panel">
-    <header class="panel-head">
-      <div class="id">
-        <img class="avatar" [src]="fc.avatar.value" alt="avatar" />
-        <div>
-          <h2>Doctor profile</h2>
-          <p class="muted">Keep your public details up to date.</p>
-        </div>
-      </div>
-      <div class="actions">
-        <button mat-stroked-button (click)="reset()"><mat-icon>refresh</mat-icon> Reset</button>
-        <button mat-flat-button color="primary" (click)="save()"><mat-icon>save</mat-icon> Save</button>
-      </div>
-    </header>
-
-    <!-- Identity -->
-    <div class="section">
-      <h3 class="section-title"><mat-icon>badge</mat-icon> Identity</h3>
-
-      <div class="grid">
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Full name</mat-label>
-          <input matInput [formControl]="fc.name" required />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Title</mat-label>
-          <input matInput [formControl]="fc.title" placeholder="e.g., Consultant Pediatrician" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Department</mat-label>
-          <mat-select [formControl]="fc.department">
-            <mat-option *ngFor="let d of departments" [value]="d">{{ d }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Years of experience</mat-label>
-          <input matInput type="number" [formControl]="fc.yearsExperience" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>License / registration number</mat-label>
-          <input matInput [formControl]="fc.licenseNumber" />
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Avatar URL</mat-label>
-          <input matInput [formControl]="fc.avatar" />
-          <mat-hint>Paste an image URL (you can upload later)</mat-hint>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>About / bio</mat-label>
-          <textarea matInput rows="4" [formControl]="fc.about"></textarea>
-        </mat-form-field>
-      </div>
+<div class="profile-shell" [class.loading]="loadingProfile">
+  <ng-container *ngIf="!loadingProfile; else loadingState">
+    <div class="alerts" *ngIf="apiError">
+      <mat-icon>error</mat-icon>
+      <span>{{ apiError }}</span>
     </div>
 
-    <!-- Professional -->
-    <div class="section">
-      <h3 class="section-title"><mat-icon>workspace_premium</mat-icon> Professional</h3>
-
-      <div class="chip-row">
-        <label>Languages</label>
-        <div class="chips">
-          <span class="chip" *ngFor="let c of array('languages').controls; let i = index">
-            {{ c.value }} <button type="button" class="x" (click)="removeChip('languages', i)">×</button>
-          </span>
-          <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('languages', $event)">
-        </div>
-      </div>
-
-      <div class="chip-row">
-        <label>Hospitals / clinics</label>
-        <div class="chips">
-          <span class="chip" *ngFor="let c of array('hospitals').controls; let i = index">
-            {{ c.value }} <button type="button" class="x" (click)="removeChip('hospitals', i)">×</button>
-          </span>
-          <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('hospitals', $event)">
-        </div>
-      </div>
-
-      <div class="chip-row">
-        <label>Education</label>
-        <div class="chips">
-          <span class="chip" *ngFor="let c of array('education').controls; let i = index">
-            {{ c.value }} <button type="button" class="x" (click)="removeChip('education', i)">×</button>
-          </span>
-          <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('education', $event)">
-        </div>
-      </div>
-
-      <div class="chip-row">
-        <label>Certificates</label>
-        <div class="chips">
-          <span class="chip" *ngFor="let c of array('certificates').controls; let i = index">
-            {{ c.value }} <button type="button" class="x" (click)="removeChip('certificates', i)">×</button>
-          </span>
-          <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('certificates', $event)">
-        </div>
-      </div>
-    </div>
-
-    <!-- Availability & pricing -->
-    <div class="section">
-      <h3 class="section-title"><mat-icon>video_chat</mat-icon> Availability & pricing</h3>
-
-      <div class="mods">
-        <mat-slide-toggle [formControl]="ctrlChat"><mat-icon>chat</mat-icon> Chat</mat-slide-toggle>
-        <mat-slide-toggle [formControl]="ctrlVoice"><mat-icon>call</mat-icon> Voice</mat-slide-toggle>
-        <mat-slide-toggle [formControl]="ctrlVideo"><mat-icon>videocam</mat-icon> Video</mat-slide-toggle>
-      </div>
-
-      <mat-form-field appearance="outline" class="meet full">
-        <mat-label>Voice/video provider</mat-label>
-        <mat-select [formControl]="fc.externalMeetProvider">
-          <mat-option *ngFor="let p of meetProviders" [value]="p">{{ p }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <div class="prices">
-        <div class="prices-head">
-          <span>Country</span><span>Currency</span><span>Chat</span><span>Voice</span><span>Video</span><span></span>
-        </div>
-
-        <div class="prices-row" *ngFor="let grp of priceGroups(); let i = index; trackBy: trackIndex" [formGroup]="grp">
-          <input class="mini" type="text"   formControlName="country" />
-          <input class="mini" type="text"   formControlName="currency" />
-          <input class="mini" type="number" formControlName="chat" />
-          <input class="mini" type="number" formControlName="voice" />
-          <input class="mini" type="number" formControlName="video" />
-          <button type="button" class="icon danger" mat-icon-button (click)="removePriceRow(i)" matTooltip="Remove">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-
-        <button mat-stroked-button class="add-price" (click)="addPriceRow()">
-          <mat-icon>add</mat-icon> Add country price
-        </button>
-      </div>
-    </div>
-
-    <!-- Policies -->
-    <div class="section">
-      <h3 class="section-title"><mat-icon>policy</mat-icon> Policies</h3>
-      <div class="grid">
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Cancellation</mat-label>
-          <textarea matInput rows="3" [formControl]="polCancellation"></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Refund</mat-label>
-          <textarea matInput rows="3" [formControl]="polRefund"></textarea>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full">
-          <mat-label>Reschedule</mat-label>
-          <textarea matInput rows="3" [formControl]="polReschedule"></textarea>
-        </mat-form-field>
-      </div>
-
-      <div class="footer-actions">
-        <button mat-stroked-button (click)="reset()"><mat-icon>refresh</mat-icon> Reset</button>
-        <button mat-flat-button color="primary" (click)="save()"><mat-icon>save</mat-icon> Save changes</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- RIGHT: Public preview -->
-  <aside class="panel preview-panel">
-    <div class="doc-card">
-      <header class="head">
-        <img [src]="preview().avatar" alt="" class="avatar-lg" />
-        <div class="meta">
-          <h3>{{ preview().name }}</h3>
-          <div class="sub">
-            <span class="title">{{ preview().title || 'Specialty' }}</span>
-            <span class="dot"></span>
-            <span class="pill">{{ preview().dept }}</span>
+    <section class="panel form-panel" [formGroup]="form">
+      <header class="panel-head">
+        <div class="id">
+          <img class="avatar" [src]="fc.avatarUrl.value || 'https://i.pravatar.cc/160?img=15'" alt="avatar" />
+          <div>
+            <h2>Doctor profile</h2>
+            <p class="muted">Complete your profile to unlock the workspace.</p>
           </div>
+        </div>
+        <div class="actions">
+          <button mat-stroked-button type="button" (click)="reset()" [disabled]="saving">
+            <mat-icon>refresh</mat-icon>
+            Reset
+          </button>
+          <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving">
+            <mat-icon>{{ saving ? 'hourglass_bottom' : 'save' }}</mat-icon>
+            {{ saving ? 'Saving…' : 'Save changes' }}
+          </button>
         </div>
       </header>
 
-      <div class="prices-preview">
-        <div class="row" *ngFor="let p of preview().prices">
-          <span class="cc">{{ p.country }}</span>
-          <span class="price"><mat-icon>chat_bubble</mat-icon> {{ priceLabel(p,'chat') }}</span>
-          <span class="price"><mat-icon>call</mat-icon> {{ priceLabel(p,'voice') }}</span>
-          <span class="price"><mat-icon>videocam</mat-icon> {{ priceLabel(p,'video') }}</span>
+      <div class="section">
+        <h3 class="section-title"><mat-icon>badge</mat-icon> Identity</h3>
+        <div class="grid">
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Display name</mat-label>
+            <input matInput formControlName="fullName" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Professional title</mat-label>
+            <input matInput formControlName="title" placeholder="Consultant cardiologist, GP, etc." />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Department</mat-label>
+            <mat-select formControlName="departmentId">
+              <mat-option [value]="null">Select department</mat-option>
+              <mat-option *ngFor="let d of departments" [value]="d.id">{{ d.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Years of experience</mat-label>
+            <input matInput type="number" min="0" formControlName="yearsOfExperience" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>License / registration number</mat-label>
+            <input matInput formControlName="licenseNumber" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Avatar URL</mat-label>
+            <input matInput formControlName="avatarUrl" />
+            <mat-hint>Paste an image link you want to display.</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Phone number</mat-label>
+            <input matInput formControlName="phone" placeholder="+20xxxxxxxxxx" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>Bio</mat-label>
+            <textarea matInput rows="4" formControlName="bio"></textarea>
+          </mat-form-field>
         </div>
       </div>
 
-      <div class="chips">
-        <span class="chip" *ngFor="let l of preview().langs">{{ l }}</span>
+      <div class="section">
+        <h3 class="section-title"><mat-icon>workspace_premium</mat-icon> Professional details</h3>
+
+        <div class="chip-row">
+          <label>Languages</label>
+          <div class="chips">
+            <span class="chip" *ngFor="let control of array('languages').controls; let i = index">
+              {{ control.value }}
+              <button type="button" class="x" (click)="removeChip('languages', i)">×</button>
+            </span>
+            <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('languages', $event)" />
+          </div>
+        </div>
+
+        <div class="chip-row">
+          <label>Hospitals / clinics</label>
+          <div class="chips">
+            <span class="chip" *ngFor="let control of array('hospitals').controls; let i = index">
+              {{ control.value }}
+              <button type="button" class="x" (click)="removeChip('hospitals', i)">×</button>
+            </span>
+            <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('hospitals', $event)" />
+          </div>
+        </div>
+
+        <div class="chip-row">
+          <label>Education</label>
+          <div class="chips">
+            <span class="chip" *ngFor="let control of array('education').controls; let i = index">
+              {{ control.value }}
+              <button type="button" class="x" (click)="removeChip('education', i)">×</button>
+            </span>
+            <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('education', $event)" />
+          </div>
+        </div>
+
+        <div class="chip-row">
+          <label>Certificates</label>
+          <div class="chips">
+            <span class="chip" *ngFor="let control of array('certificates').controls; let i = index">
+              {{ control.value }}
+              <button type="button" class="x" (click)="removeChip('certificates', i)">×</button>
+            </span>
+            <input class="chip-input" placeholder="Add & Enter" (keydown.enter)="onChipEnter('certificates', $event)" />
+          </div>
+        </div>
       </div>
 
-      <p class="bio muted">{{ preview().about || 'Your bio will appear here.' }}</p>
+      <div class="section">
+        <h3 class="section-title"><mat-icon>video_chat</mat-icon> Availability & pricing</h3>
 
-      <div class="lists">
-        <div class="list">
+        <div class="mods" formGroupName="availability">
+          <mat-slide-toggle formControlName="chat"><mat-icon>chat</mat-icon> Chat</mat-slide-toggle>
+          <mat-slide-toggle formControlName="voice"><mat-icon>call</mat-icon> Voice</mat-slide-toggle>
+          <mat-slide-toggle formControlName="video"><mat-icon>videocam</mat-icon> Video</mat-slide-toggle>
+        </div>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Voice / video provider</mat-label>
+          <mat-select formControlName="videoProvider">
+            <mat-option *ngFor="let provider of meetingProviders" [value]="provider">{{ provider }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="pricing-grid" formArrayName="pricing">
+          <div
+            class="pricing-row"
+            *ngFor="let group of pricingControls(); let i = index; trackBy: trackIndex"
+            [formGroupName]="i"
+          >
+            <span class="service-chip">{{ group.get('service')?.value }}</span>
+            <mat-form-field appearance="outline">
+              <mat-label>Currency</mat-label>
+              <input matInput formControlName="currency" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Price</mat-label>
+              <input matInput type="number" min="0" formControlName="price" />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title"><mat-icon>policy</mat-icon> Policies</h3>
+        <div class="policy-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Cancellation window (hours)</mat-label>
+            <input matInput type="number" min="0" formControlName="cancellationPolicy" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Reschedule window (hours)</mat-label>
+            <input matInput type="number" min="0" formControlName="reschedulePolicy" />
+          </mat-form-field>
+
+          <mat-slide-toggle formControlName="refundPolicy">Refund policy enabled</mat-slide-toggle>
+        </div>
+
+        <div class="footer-actions">
+          <button mat-stroked-button type="button" (click)="reset()" [disabled]="saving">
+            <mat-icon>refresh</mat-icon>
+            Reset
+          </button>
+          <button mat-flat-button color="primary" type="button" (click)="save()" [disabled]="saving">
+            <mat-icon>{{ saving ? 'hourglass_bottom' : 'save' }}</mat-icon>
+            {{ saving ? 'Saving…' : 'Save changes' }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel preview-panel">
+      <div class="doc-card">
+        <header class="head">
+          <img [src]="preview().avatarUrl" alt="" class="avatar-lg" />
+          <div class="meta">
+            <h3>{{ preview().fullName }}</h3>
+            <div class="sub">
+              <span class="title">{{ preview().title }}</span>
+              <span class="dot"></span>
+              <span class="pill">{{ preview().department }}</span>
+            </div>
+            <div class="sub" *ngIf="preview().yearsOfExperience">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ preview().yearsOfExperience }} years experience</span>
+            </div>
+            <div class="sub" *ngIf="preview().phone">
+              <mat-icon>call</mat-icon>
+              <span>{{ preview().phone }}</span>
+            </div>
+          </div>
+        </header>
+
+        <section class="preview-section">
+          <h4><mat-icon>info</mat-icon> About</h4>
+          <p class="muted">{{ preview().bio || 'Fill in your bio to showcase your expertise.' }}</p>
+        </section>
+
+        <section class="preview-section" *ngIf="preview().pricing.length > 0">
+          <h4><mat-icon>payments</mat-icon> Pricing</h4>
+          <div class="pricing-preview">
+            <div class="price-pill" *ngFor="let price of preview().pricing">
+              <mat-icon *ngIf="price.service === 'CHAT'">chat</mat-icon>
+              <mat-icon *ngIf="price.service === 'VOICE'">call</mat-icon>
+              <mat-icon *ngIf="price.service === 'VIDEO'">videocam</mat-icon>
+              <span>{{ price.service }}</span>
+              <strong>{{ priceLabel(price) }}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="preview-section">
+          <h4><mat-icon>chat</mat-icon> Languages</h4>
+          <div class="chips">
+            <span class="chip" *ngFor="let lang of preview().languages">{{ lang }}</span>
+            <span class="muted" *ngIf="!preview().languages.length">Add languages you speak.</span>
+          </div>
+        </section>
+
+        <section class="preview-section">
           <h4><mat-icon>local_hospital</mat-icon> Hospitals / clinics</h4>
-          <ul><li *ngFor="let h of preview().hosps">{{ h }}</li></ul>
-        </div>
-        <div class="list">
+          <ul>
+            <li *ngFor="let h of preview().hospitals">{{ h }}</li>
+            <li class="muted" *ngIf="!preview().hospitals.length">Add where you practice.</li>
+          </ul>
+        </section>
+
+        <section class="preview-section">
           <h4><mat-icon>school</mat-icon> Education</h4>
-          <ul><li *ngFor="let e of preview().edu">{{ e }}</li></ul>
-        </div>
-        <div class="list">
+          <ul>
+            <li *ngFor="let e of preview().education">{{ e }}</li>
+            <li class="muted" *ngIf="!preview().education.length">List your education.</li>
+          </ul>
+        </section>
+
+        <section class="preview-section">
           <h4><mat-icon>workspace_premium</mat-icon> Certificates</h4>
-          <ul><li *ngFor="let c of preview().certs">{{ c }}</li></ul>
-        </div>
+          <ul>
+            <li *ngFor="let c of preview().certificates">{{ c }}</li>
+            <li class="muted" *ngIf="!preview().certificates.length">Add your certifications.</li>
+          </ul>
+        </section>
       </div>
-    </div>
-  </aside>
+    </aside>
+  </ng-container>
 </div>
+
+<ng-template #loadingState>
+  <div class="loading-state">
+    <mat-icon>hourglass_empty</mat-icon>
+    <span>Loading your profile…</span>
+  </div>
+</ng-template>

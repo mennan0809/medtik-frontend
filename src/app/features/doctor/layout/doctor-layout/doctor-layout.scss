@@ -73,3 +73,73 @@
 :host ::ng-deep .topbar {
   background: transparent !important;
 }
+.side.side-locked {
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.mat-mdc-list-item.disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  backdrop-filter: blur(4px);
+  background: linear-gradient(180deg, rgba(10,15,25,0.72), rgba(10,15,25,0.85));
+  z-index: 5;
+  padding: 1.5rem;
+}
+
+.overlay-card {
+  max-width: 420px;
+  text-align: center;
+  padding: 2rem;
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 28px 70px rgba(0,0,0,.45);
+  display: grid;
+  gap: 0.85rem;
+}
+
+.overlay-card mat-icon {
+  font-size: 44px;
+  height: 44px;
+  width: 44px;
+  margin: 0 auto;
+  color: #8fc7ff;
+}
+
+.overlay-card h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.overlay-card p {
+  margin: 0 0 0.75rem;
+  color: #d0d6e2;
+  line-height: 1.4;
+}
+
+.page-locked {
+  filter: blur(2px) grayscale(0.35);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+}
+
+.mat-toolbar button[disabled] {
+  opacity: 0.5;
+}
+.mat-mdc-list-item.lock-exempt {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
