@@ -1,15 +1,15 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule }      from '@angular/material/input';
-import { MatButtonModule }     from '@angular/material/button';
-import { MatIconModule }       from '@angular/material/icon';
-import { MatSelectModule }     from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+import { AuthService, RegisterPatientPayload } from '../services/auth.service';
 
 type Country = { name: string; iso2: string; dial: string; flag: string };
 
@@ -67,25 +67,33 @@ const COUNTRIES: Country[] = [
   selector: 'app-signup',
   standalone: true,
   imports: [
-    CommonModule, ReactiveFormsModule,
-    MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule,
-    MatSelectModule, MatDatepickerModule, MatNativeDateModule,
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   templateUrl: './signup.html',
   styleUrls: ['./signup.scss'],
 })
 export class SignupComponent {
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
 
   hide = true;
+  loading = false;
+  apiError: string | null = null;
 
   countries = COUNTRIES;
   genders = ['Male', 'Female', 'Other', 'Prefer not to say'];
 
-  // datepicker helpers
-  today = new Date();             // used to prevent future dates
-  startAt = new Date(1995, 0, 1); // where the calendar opens initially
+  today = new Date();
+  startAt = new Date(1995, 0, 1);
 
   selectedDial = this.countries.find(c => c.iso2 === 'EG')?.dial ?? this.countries[0].dial;
 
@@ -99,29 +107,72 @@ export class SignupComponent {
     phoneLocal: ['', [Validators.required, Validators.pattern(/^\d{6,14}$/)]],
   });
 
-  get f() { return this.form.controls; }
-  get selectedCountry() { return this.countries.find(c => c.name === this.form.value.country!); }
+  get f() {
+    return this.form.controls;
+  }
+
+  get selectedCountry() {
+    return this.countries.find(c => c.name === this.form.value.country!);
+  }
 
   onCountryChange(name: string) {
     const c = this.countries.find(x => x.name === name);
-    if (c) this.selectedDial = c.dial;
+    if (c) {
+      this.selectedDial = c.dial;
+    }
   }
 
   submit() {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-    const c = this.countries.find(x => x.name === this.form.value.country)!;
-    const fullPhone = `${c.dial}${this.form.value.phoneLocal}`;
+    const country = this.countries.find(x => x.name === this.form.value.country);
+    if (!country) {
+      this.apiError = 'Please select a valid country.';
+      return;
+    }
 
-    // TODO: AuthService.register(...).then(() => send OTP)
-    this.router.navigate(['/auth/otp'], { state: { phone: fullPhone } }); 
+    const fullPhone = `${country.dial}${(this.form.value.phoneLocal ?? '').trim()}`;
+    const birthdate = this.form.value.birthdate as Date;
+
+    const payload: RegisterPatientPayload = {
+      fullName: (this.form.value.fullName ?? '').trim(),
+      email: (this.form.value.email ?? '').trim().toLowerCase(),
+      password: this.form.value.password ?? '',
+      gender: this.form.value.gender ?? '',
+      country: country.name,
+      phone: fullPhone,
+      birthdate:
+        birthdate instanceof Date ? birthdate.toISOString() : new Date(birthdate).toISOString(),
+    };
+
+    this.loading = true;
+    this.apiError = null;
+
+    this.auth.registerPatient(payload).subscribe({
+      next: () => {
+        this.loading = false;
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('medtik_pending_email', payload.email);
+          sessionStorage.setItem('medtik_pending_phone', payload.phone);
+        }
+
+        this.router.navigate(['/auth/otp'], { state: { phone: payload.phone, email: payload.email } });
+      },
+      error: err => {
+        this.loading = false;
+        this.apiError = err;
+      },
+    });
   }
 
   AlreadyExist() {
-    if(this.form.dirty) {
+    if (this.form.dirty) {
       this.form.markAllAsTouched();
+    }
+
     this.router.navigate(['/auth/login']);
   }
-}
-
 }

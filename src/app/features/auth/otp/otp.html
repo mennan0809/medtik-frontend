@@ -12,7 +12,7 @@
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="outline">
           <mat-label>OTP code</mat-label>
-          <input matInput maxlength="6" formControlName="code" placeholder="••••••" />
+          <input matInput maxlength="6" formControlName="code" placeholder="******" />
           <mat-error *ngIf="form.controls.code.touched && form.controls.code.errors?.['required']">
             Code is required
           </mat-error>
@@ -21,7 +21,12 @@
           </mat-error>
         </mat-form-field>
 
-        <button mat-flat-button color="primary" class="submit" type="submit">Verify</button>
+        <p class="api-error" *ngIf="apiError" role="alert">{{ apiError }}</p>
+        <p class="info" *ngIf="infoMessage">{{ infoMessage }}</p>
+
+        <button mat-flat-button color="primary" class="submit" type="submit" [disabled]="loading">
+          {{ loading ? 'Verifying...' : 'Verify' }}
+        </button>
 
         <div class="aux">
           <button type="button" mat-button (click)="resend()" [disabled]="seconds>0">

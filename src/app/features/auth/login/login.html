@@ -1,6 +1,5 @@
 <div class="auth-shell" @flyIn>
   <div class="auth-frame">
-    <!-- LEFT: hero / brand -->
     <aside class="hero-pane">
       <div class="brand">
         <img class="brand-mark" src="https://ik.imagekit.io/a2wpi1kd9/imgToUrl/image-to-url_HEow9eLbR" alt="Medtik" />
@@ -8,16 +7,13 @@
         <p class="tag">Care that comes to you</p>
       </div>
 
-
-
       <ul class="benefits">
         <li><mat-icon>military_tech</mat-icon> Best doctors in the middle east</li>
-        <li><mat-icon>videocam</mat-icon> Chat, voice, or video — your choice</li>
+        <li><mat-icon>videocam</mat-icon> Chat, voice, or video - your choice</li>
         <li><mat-icon>payments</mat-icon> Secure, verified checkout with Paymob</li>
       </ul>
     </aside>
 
-    <!-- RIGHT: form -->
     <main class="form-pane" @staggerIn>
       <h2>Welcome back</h2>
       <p class="sub">Sign in to manage your consultations</p>
@@ -41,7 +37,11 @@
           <mat-error *ngIf="form.controls.password.hasError('minlength')">Min 6 characters</mat-error>
         </mat-form-field>
 
-        <button mat-flat-button color="primary" class="submit stagger" type="submit">Sign in</button>
+        <p class="api-error" *ngIf="apiError" role="alert">{{ apiError }}</p>
+
+        <button mat-flat-button color="primary" class="submit stagger" type="submit" [disabled]="loading">
+          {{ loading ? 'Signing in...' : 'Sign in' }}
+        </button>
       </form>
 
       <div class="aux stagger"><a routerLink="/auth/forgot">Forgot password?</a></div>

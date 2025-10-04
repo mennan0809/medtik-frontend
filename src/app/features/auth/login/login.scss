@@ -111,3 +111,10 @@ form{ display: grid; gap: .8rem; }
   .auth-frame{ width: 94vw; }
   .hero-pane, .form-pane{ padding: 18px 14px; }
 }
+
+.api-error{
+  color: #f44336;
+  font-size: 0.85rem;
+  margin: -0.25rem 0 0.5rem;
+}
+

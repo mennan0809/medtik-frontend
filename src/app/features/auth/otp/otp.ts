@@ -1,16 +1,17 @@
-import { Component, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnDestroy, inject } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule }      from '@angular/material/input';
-import { MatButtonModule }     from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { AuthService, VerifyOtpRequest } from '../services/auth.service';
 
 function maskPhone(p: string): string {
-  // keep country code and last 2–3 digits, mask the middle
-  const m = p.match(/^(\+\d{1,4})(\d+)(\d{2,3})$/);
-  if (!m) return p;
-  return `${m[1]} ${'•'.repeat(Math.max(3, m[2].length))}${m[3]}`;
+  const match = p.match(/^(\+\d{1,4})(\d+)(\d{2,3})$/);
+  if (!match) return p;
+  const maskedMiddle = '*'.repeat(Math.max(3, match[2].length));
+  return `${match[1]} ${maskedMiddle}${match[3]}`;
 }
 
 @Component({
@@ -21,43 +22,108 @@ function maskPhone(p: string): string {
   styleUrls: ['./otp.scss'],
 })
 export class OtpComponent implements OnDestroy {
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
 
-  phone: string = history.state?.phone || '';
+  private readonly cooldownSeconds = 30;
+  private intervalId: ReturnType<typeof setInterval> | null = null;
+
+  private getFromSession(key: string): string | null {
+    return typeof window !== 'undefined' ? sessionStorage.getItem(key) : null;
+  }
+
+  phone = (history.state?.phone as string | undefined) ?? this.getFromSession('medtik_pending_phone') ?? '';
+  email = (history.state?.email as string | undefined) ?? this.getFromSession('medtik_pending_email') ?? '';
+
   displayPhone = this.phone ? maskPhone(this.phone) : '';
 
   form = this.fb.group({
     code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
   });
 
-  // simple resend cooldown
-  seconds = 30;
-  interval?: any;
+  seconds = this.cooldownSeconds;
+  loading = false;
+  apiError: string | null = null;
+  infoMessage: string | null = null;
 
   constructor() {
-    this.interval = setInterval(() => {
-      this.seconds = Math.max(0, this.seconds - 1);
-      if (this.seconds === 0) clearInterval(this.interval);
-    }, 1000);
+    if (!this.email) {
+      this.router.navigate(['/auth/signup']);
+      return;
+    }
+    this.startCooldown();
   }
 
-  ngOnDestroy() { if (this.interval) clearInterval(this.interval); }
+  ngOnDestroy() {
+    this.clearInterval();
+  }
 
   resend() {
-    if (this.seconds > 0) return;
-    this.seconds = 30;
-    // TODO: call AuthService.resendOtp(this.phone)
-    this.interval = setInterval(() => {
+    if (this.seconds > 0) {
+      return;
+    }
+
+    this.infoMessage = 'If your previous OTP expired we will send a new one automatically when you try again.';
+    this.restartCooldown();
+  }
+
+  submit() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const code = this.form.value.code ?? '';
+    const payload: VerifyOtpRequest = { email: this.email, otp: code };
+
+    this.loading = true;
+    this.apiError = null;
+    this.infoMessage = null;
+
+    this.auth.verifyOtp(payload).subscribe({
+      next: () => {
+        this.loading = false;
+        this.clearPendingContact();
+        this.router.navigateByUrl('/auth/login', { state: { verified: true, email: this.email } });
+      },
+      error: err => {
+        this.loading = false;
+        this.apiError = err;
+        if (typeof err === 'string' && err.toLowerCase().includes('expired')) {
+          this.restartCooldown();
+        }
+      },
+    });
+  }
+
+  private restartCooldown() {
+    this.clearInterval();
+    this.seconds = this.cooldownSeconds;
+    this.startCooldown();
+  }
+
+  private startCooldown() {
+    this.clearInterval();
+    this.intervalId = setInterval(() => {
       this.seconds = Math.max(0, this.seconds - 1);
-      if (this.seconds === 0) clearInterval(this.interval);
+      if (this.seconds === 0) {
+        this.clearInterval();
+      }
     }, 1000);
   }
 
-  submit(){
-    if (this.form.invalid){ this.form.markAllAsTouched(); return; }
-    const code = this.form.value.code!;
-    // TODO: AuthService.verifyOtp({ phone: this.phone, code })
-    this.router.navigateByUrl('/auth/login'); // or dashboard after verification
+  private clearInterval() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+  }
+
+  private clearPendingContact() {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('medtik_pending_email');
+      sessionStorage.removeItem('medtik_pending_phone');
+    }
   }
 }

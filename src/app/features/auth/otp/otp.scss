@@ -27,3 +27,16 @@ form{ display: grid; gap: .8rem; }
 .aux{ display: flex; justify-content: center; margin-top: .1rem; }
 .aux a{ color:#a7b4c5; text-decoration:none; }
 .aux a:hover{ color:#e6eaf2; }
+
+.api-error{
+  color: #f44336;
+  font-size: 0.85rem;
+  margin: -0.25rem 0 0.5rem;
+}
+
+.info{
+  color: #a7b4c5;
+  font-size: 0.85rem;
+  margin: -0.25rem 0 0.5rem;
+}
+

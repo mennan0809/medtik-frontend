@@ -34,16 +34,14 @@
           <mat-error *ngIf="f.password.touched && f.password.errors?.['minlength']">Min 6 characters</mat-error>
         </mat-form-field>
 
-        <!-- Birthdate: Material datepicker -->
-                <mat-form-field appearance="outline">
-                  <mat-label>Birthdate</mat-label>
-                  <input matInput [matDatepicker]="picker" formControlName="birthdate" [max]="today"/>
-                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                  <mat-datepicker #picker [startAt]="startAt"></mat-datepicker>
-                  <mat-error *ngIf="f.birthdate.touched && f.birthdate.errors?.['required']">Birthdate is required</mat-error>
-                </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Birthdate</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="birthdate" [max]="today" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker [startAt]="startAt"></mat-datepicker>
+          <mat-error *ngIf="f.birthdate.touched && f.birthdate.errors?.['required']">Birthdate is required</mat-error>
+        </mat-form-field>
 
-        <!-- Gender: Material select -->
         <mat-form-field appearance="outline">
           <mat-label>Gender</mat-label>
           <mat-select formControlName="gender">
@@ -52,7 +50,6 @@
           <mat-error *ngIf="f.gender.touched && f.gender.errors?.['required']">Gender is required</mat-error>
         </mat-form-field>
 
-        <!-- Country select with emoji in trigger and options -->
         <mat-form-field appearance="outline">
           <mat-label>Country</mat-label>
           <mat-select formControlName="country" (selectionChange)="onCountryChange($event.value)">
@@ -71,17 +68,18 @@
           <mat-error *ngIf="f.country.touched && f.country.errors?.['required']">Country is required</mat-error>
         </mat-form-field>
 
-        <!-- Phone with auto country code prefix -->
         <mat-form-field appearance="outline">
           <mat-label>Phone number</mat-label>
           <span matPrefix class="dial">{{ selectedDial }}</span>
           <input matInput formControlName="phoneLocal" autocomplete="tel" placeholder="1234567890" />
           <mat-error *ngIf="f.phoneLocal.touched && f.phoneLocal.errors?.['required']">Phone is required</mat-error>
-          <mat-error *ngIf="f.phoneLocal.touched && f.phoneLocal.errors?.['pattern']">Digits only, 6–14</mat-error>
+          <mat-error *ngIf="f.phoneLocal.touched && f.phoneLocal.errors?.['pattern']">Digits only, 6-14</mat-error>
         </mat-form-field>
 
-        <button mat-flat-button color="primary" class="submit" type="submit">
-          Create account
+        <p class="api-error" *ngIf="apiError">{{ apiError }}</p>
+
+        <button mat-flat-button color="primary" class="submit" type="submit" [disabled]="loading">
+          {{ loading ? 'Creating...' : 'Create account' }}
         </button>
 
         <div class="Already-have-account">
